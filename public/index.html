@@ -212,19 +212,22 @@
       >
 
       <button onclick="calculateDelivery()">
-       // CUSTOMER ORDER
+
+        Calculate Delivery
+      </button>
+
+      <div id="deliveryResult" class="result"></div>
+    </div>
+
+  </div>
+
+// CUSTOMER ORDER
 function placeOrder() {
-  const productName =
-    document.getElementById("orderProductName").value.trim();
+  const productName = document.getElementById("orderProductName").value.trim();
+  const quantity = Number(document.getElementById("orderQuantity").value);
 
-  const quantity =
-    Number(document.getElementById("orderQuantity").value);
-
-  const savedProduct =
-    localStorage.getItem("quickMarketplaceProduct");
-
-  const savedShop =
-    localStorage.getItem("quickMarketplaceShop");
+  const savedProduct = localStorage.getItem("quickMarketplaceProduct");
+  const savedShop = localStorage.getItem("quickMarketplaceShop");
 
   if (!savedProduct || !savedShop) {
     alert("Please create a shop and add a product first.");
@@ -245,20 +248,14 @@ function placeOrder() {
   }
 
   if (quantity < product.minimumQuantity) {
-    alert(
-      "Minimum quantity is " +
-      product.minimumQuantity +
-      " for this product."
-    );
+    alert("Minimum quantity is " + product.minimumQuantity + " for this product.");
     return;
   }
 
   const total = product.price * quantity;
   const commission = shop.commission * quantity;
 
-  const result =
-    document.getElementById("orderResult");
-
+  const result = document.getElementById("orderResult");
   result.style.display = "block";
 
   result.innerHTML =
@@ -268,15 +265,6 @@ function placeOrder() {
     "<strong>Total:</strong> ₦" + total.toLocaleString() + "<br>" +
     "<strong>Commission:</strong> ₦" + commission.toLocaleString();
 }
-        Calculate Delivery
-      </button>
-
-      <div id="deliveryResult" class="result"></div>
-    </div>
-
-  </div>
-
-
   <script>
 
     // CREATE SHOP
