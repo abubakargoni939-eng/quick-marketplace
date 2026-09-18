@@ -153,7 +153,29 @@
       <div id="productResult" class="result"></div>
     </div>
 
+<!-- CUSTOMER ORDER -->
+<div class="card">
+  <h2>Customer Order 🛒</h2>
 
+  <label>Product Name</label>
+  <input
+    type="text"
+    id="orderProductName"
+    placeholder="e.g. Fura"
+  >
+
+  <label>Quantity</label>
+  <input
+    type="number"
+    id="orderQuantity"
+    placeholder="e.g. 10"
+    min="1"
+  >
+
+  <button onclick="placeOrder()">Place Order</button>
+
+  <div id="orderResult" class="result"></div>
+</div>
     <!-- DELIVERY -->
     <div class="card">
       <h2>Delivery</h2>
