@@ -34,7 +34,13 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
-    input, select, button {
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, button {
       width: 100%;
       padding: 12px;
       margin-top: 8px;
@@ -52,15 +58,17 @@
       font-weight: bold;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
     .result {
       background: #f0f0f0;
       padding: 15px;
       border-radius: 8px;
       display: none;
+      line-height: 1.7;
+    }
+
+    .success {
+      color: green;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -74,18 +82,38 @@
 
   <div class="container">
 
-    <!-- Shop Creation -->
+    <!-- SHOP CREATION -->
     <div class="card">
       <h2>Create Your Shop</h2>
 
+      <label>Shop Owner Name</label>
+      <input
+        type="text"
+        id="ownerName"
+        placeholder="Enter your name"
+      >
+
       <label>Shop Name</label>
-      <input type="text" id="shopName" placeholder="Enter shop name">
+      <input
+        type="text"
+        id="shopName"
+        placeholder="Enter shop name"
+      >
 
       <label>Shop Location</label>
-      <input type="text" id="shopLocation" placeholder="e.g. Kano">
+      <input
+        type="text"
+        id="shopLocation"
+        placeholder="e.g. Kano"
+      >
 
       <label>Commission per Item (₦)</label>
-      <input type="number" id="commission" placeholder="e.g. 50">
+      <input
+        type="number"
+        id="commission"
+        placeholder="e.g. 50"
+        min="1"
+      >
 
       <button onclick="createShop()">Create Shop</button>
 
@@ -93,18 +121,32 @@
     </div>
 
 
-    <!-- Product -->
+    <!-- PRODUCT -->
     <div class="card">
       <h2>Add Product</h2>
 
       <label>Product Name</label>
-      <input type="text" id="productName" placeholder="e.g. Fula">
+      <input
+        type="text"
+        id="productName"
+        placeholder="e.g. Fula"
+      >
 
       <label>Price (₦)</label>
-      <input type="number" id="productPrice" placeholder="e.g. 800">
+      <input
+        type="number"
+        id="productPrice"
+        placeholder="e.g. 800"
+        min="1"
+      >
 
       <label>Minimum Quantity</label>
-      <input type="number" id="minimumQuantity" placeholder="e.g. 10" min="1">
+      <input
+        type="number"
+        id="minimumQuantity"
+        placeholder="e.g. 10"
+        min="1"
+      >
 
       <button onclick="addProduct()">Add Product</button>
 
@@ -112,23 +154,43 @@
     </div>
 
 
-    <!-- Delivery -->
+    <!-- DELIVERY -->
     <div class="card">
       <h2>Delivery</h2>
 
       <label>From</label>
-      <input type="text" id="fromLocation" placeholder="e.g. Kano">
+      <input
+        type="text"
+        id="fromLocation"
+        placeholder="e.g. Kano"
+      >
 
       <label>To</label>
-      <input type="text" id="toLocation" placeholder="e.g. Maiduguri">
+      <input
+        type="text"
+        id="toLocation"
+        placeholder="e.g. Maiduguri"
+      >
 
       <label>Order Amount (₦)</label>
-      <input type="number" id="orderAmount" placeholder="e.g. 50000">
+      <input
+        type="number"
+        id="orderAmount"
+        placeholder="e.g. 50000"
+        min="1"
+      >
 
       <label>Delivery Fee (₦)</label>
-      <input type="number" id="deliveryFee" placeholder="e.g. 20000">
+      <input
+        type="number"
+        id="deliveryFee"
+        placeholder="e.g. 20000"
+        min="1"
+      >
 
-      <button onclick="calculateDelivery()">Calculate Delivery</button>
+      <button onclick="calculateDelivery()">
+        Calculate Delivery
+      </button>
 
       <div id="deliveryResult" class="result"></div>
     </div>
@@ -138,71 +200,159 @@
 
   <script>
 
+    // CREATE SHOP
     function createShop() {
-      const name = document.getElementById("shopName").value.trim();
-      const location = document.getElementById("shopLocation").value.trim();
-      const commission = document.getElementById("commission").value;
 
-      if (!name || !location || !commission) {
-        alert("Please fill in all shop details.");
+      const ownerName =
+        document.getElementById("ownerName").value.trim();
+
+      const shopName =
+        document.getElementById("shopName").value.trim();
+
+      const shopLocation =
+        document.getElementById("shopLocation").value.trim();
+
+      const commission =
+        Number(document.getElementById("commission").value);
+
+
+      if (!ownerName || !shopName || !shopLocation || commission <= 0) {
+        alert("Please fill in all shop details correctly.");
         return;
       }
 
-      document.getElementById("shopResult").style.display = "block";
-      document.getElementById("shopResult").innerHTML =
-        "Shop created successfully!<br>" +
-        "Commission: ₦" + commission + " per item.";
+
+      const shop = {
+        ownerName: ownerName,
+        shopName: shopName,
+        location: shopLocation,
+        commission: commission
+      };
+
+
+      // Save shop information
+      localStorage.setItem(
+        "quickMarketplaceShop",
+        JSON.stringify(shop)
+      );
+
+
+      const result =
+        document.getElementById("shopResult");
+
+      result.style.display = "block";
+
+      result.innerHTML =
+        '<span class="success">Shop created successfully!</span><br><br>' +
+        "Owner: " + ownerName + "<br>" +
+        "Shop: " + shopName + "<br>" +
+        "Location: " + shopLocation + "<br>" +
+        "Commission: ₦" +
+        commission.toLocaleString() +
+        " per item.";
     }
 
 
+    // ADD PRODUCT
     function addProduct() {
-      const name = document.getElementById("productName").value.trim();
-      const price = document.getElementById("productPrice").value;
-      const minimum = document.getElementById("minimumQuantity").value;
 
-      if (!name || !price || !minimum) {
-        alert("Please fill in all product details.");
+      const name =
+        document.getElementById("productName").value.trim();
+
+      const price =
+        Number(document.getElementById("productPrice").value);
+
+      const minimum =
+        Number(document.getElementById("minimumQuantity").value);
+
+
+      if (!name || price <= 0 || minimum <= 0) {
+        alert("Please fill in all product details correctly.");
         return;
       }
 
-      document.getElementById("productResult").style.display = "block";
-      document.getElementById("productResult").innerHTML =
-        "Product added successfully!<br>" +
+
+      const product = {
+        name: name,
+        price: price,
+        minimumQuantity: minimum
+      };
+
+
+      localStorage.setItem(
+        "quickMarketplaceProduct",
+        JSON.stringify(product)
+      );
+
+
+      const result =
+        document.getElementById("productResult");
+
+      result.style.display = "block";
+
+      result.innerHTML =
+        '<span class="success">Product added successfully!</span><br><br>' +
         "Product: " + name + "<br>" +
-        "Price: ₦" + price + "<br>" +
+        "Price: ₦" + price.toLocaleString() + "<br>" +
         "Minimum quantity: " + minimum;
     }
 
 
+    // DELIVERY CALCULATOR
     function calculateDelivery() {
-      const from = document.getElementById("fromLocation").value.trim();
-      const to = document.getElementById("toLocation").value.trim();
-      const orderAmount = Number(document.getElementById("orderAmount").value);
-      const deliveryFee = Number(document.getElementById("deliveryFee").value);
 
-      if (!from || !to || !orderAmount || !deliveryFee) {
-        alert("Please fill in all delivery details.");
+      const from =
+        document.getElementById("fromLocation").value.trim();
+
+      const to =
+        document.getElementById("toLocation").value.trim();
+
+      const orderAmount =
+        Number(document.getElementById("orderAmount").value);
+
+      const deliveryFee =
+        Number(document.getElementById("deliveryFee").value);
+
+
+      if (!from || !to || orderAmount <= 0 || deliveryFee <= 0) {
+        alert("Please fill in all delivery details correctly.");
         return;
       }
 
-      let customerPayment = deliveryFee;
-      let appPayment = 0;
 
+      let appPayment = 0;
+      let customerPayment = deliveryFee;
+
+
+      // App pays 50% when order reaches ₦50,000
       if (orderAmount >= 50000) {
+
         appPayment = deliveryFee * 0.5;
+
         customerPayment = deliveryFee * 0.5;
       }
 
-      document.getElementById("deliveryResult").style.display = "block";
 
-      document.getElementById("deliveryResult").innerHTML =
-        "Route: " + from + " → " + to + "<br>" +
-        "Delivery fee: ₦" + deliveryFee.toLocaleString() + "<br>" +
-        "App pays: ₦" + appPayment.toLocaleString() + "<br>" +
-        "Customer pays: ₦" + customerPayment.toLocaleString();
+      const result =
+        document.getElementById("deliveryResult");
+
+      result.style.display = "block";
+
+      result.innerHTML =
+        "<strong>Route:</strong> " +
+        from + " → " + to + "<br>" +
+
+        "<strong>Delivery Fee:</strong> ₦" +
+        deliveryFee.toLocaleString() + "<br>" +
+
+        "<strong>App Pays:</strong> ₦" +
+        appPayment.toLocaleString() + "<br>" +
+
+        "<strong>Customer Pays:</strong> ₦" +
+        customerPayment.toLocaleString();
     }
 
   </script>
 
 </body>
-</html>
+  </html>
