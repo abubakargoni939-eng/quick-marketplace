@@ -1,874 +1,1330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Marketplace</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Marketplace</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #222;
-    }
+body{
+  font-family:Arial, sans-serif;
+  background:#f4f6f8;
+  color:#17202a;
+  padding-bottom:75px;
+}
 
-    header {
-      background: linear-gradient(135deg, #111827, #2563eb);
-      color: white;
-      padding: 28px 20px 30px;
-      border-radius: 0 0 25px 25px;
-    }
+.header{
+  background:linear-gradient(135deg,#111827,#1f2937);
+  color:white;
+  padding:22px 18px;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 30px;
-    }
+.header h1{
+  font-size:23px;
+  margin-bottom:5px;
+}
 
-    header p {
-      margin: 8px 0 0;
-      opacity: 0.9;
-    }
+.header p{
+  font-size:13px;
+  opacity:.8;
+}
 
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 18px;
-      padding-bottom: 100px;
-    }
+.search{
+  margin-top:15px;
+}
 
-    .search {
-      background: white;
-      padding: 12px;
-      border-radius: 14px;
-      margin-top: -8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
+.search input{
+  width:100%;
+  padding:13px 15px;
+  border:none;
+  border-radius:12px;
+  outline:none;
+  font-size:15px;
+}
 
-    .search input {
-      width: 90%;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      padding: 8px;
-    }
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
 
-    .welcome,
-    .card {
-      background: white;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 18px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-    }
+.section{
+  display:none;
+}
 
-    .welcome h2,
-    .card h2 {
-      margin-top: 0;
-    }
+.section.active{
+  display:block;
+}
 
-    .quick-menu {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
+.card{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
 
-    .menu-item {
-      background: white;
-      padding: 14px 5px;
-      text-align: center;
-      border-radius: 14px;
-      font-size: 13px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-      cursor: pointer;
-    }
+.card h2{
+  font-size:19px;
+  margin-bottom:7px;
+}
 
-    .menu-icon {
-      font-size: 25px;
-      display: block;
-      margin-bottom: 5px;
-    }
+.card h3{
+  margin-bottom:12px;
+}
 
-    label {
-      display: block;
-      margin-top: 12px;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
+.card p{
+  color:#667085;
+  font-size:14px;
+  line-height:1.5;
+}
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      outline: none;
-    }
+label{
+  display:block;
+  margin-top:13px;
+  margin-bottom:6px;
+  font-weight:bold;
+  font-size:14px;
+}
 
-    input:focus {
-      border-color: #2563eb;
-    }
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d9dee5;
+  border-radius:10px;
+  font-size:15px;
+  outline:none;
+  background:white;
+}
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 16px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
 
-    .danger {
-      background: #dc2626;
-    }
+button{
+  width:100%;
+  border:none;
+  border-radius:11px;
+  padding:13px;
+  margin-top:15px;
+  background:#111827;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .successButton {
-      background: #16a34a;
-    }
+button:hover{
+  opacity:.9;
+}
 
-    .secondary {
-      background: #64748b;
-    }
+.green{
+  background:#16803c;
+}
 
-    .result {
-      display: none;
-      background: #f1f5f9;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 10px;
-      line-height: 1.7;
-    }
+.blue{
+  background:#2563eb;
+}
 
-    .success {
-      color: green;
-      font-weight: bold;
-    }
+.red{
+  background:#dc2626;
+}
 
-    .request-card,
-    .order-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 15px;
-      margin-top: 12px;
-      border-radius: 12px;
-    }
+.orange{
+  background:#ea580c;
+}
 
-    .status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      background: #fef3c7;
-      color: #92400e;
-      font-size: 12px;
-      font-weight: bold;
-    }
+.home-box{
+  background:linear-gradient(135deg,#111827,#374151);
+  color:white;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:18px;
+}
 
-    .status.accepted {
-      background: #dcfce7;
-      color: #166534;
-    }
+.home-box p{
+  color:#e5e7eb;
+}
 
-    .status.rejected {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:15px;
+}
 
-    .dashboard-box {
-      background: #eff6ff;
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 12px;
-    }
+.quick-item{
+  background:white;
+  padding:18px 12px;
+  border-radius:15px;
+  text-align:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);
+  cursor:pointer;
+}
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      padding: 9px 4px;
-      box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
+.quick-item .icon{
+  font-size:28px;
+  margin-bottom:7px;
+}
 
-    .bottom-nav button {
-      background: transparent;
-      color: #333;
-      margin: 0;
-      padding: 5px 2px;
-      font-size: 11px;
-      width: auto;
-    }
+.quick-item strong{
+  font-size:14px;
+}
 
-    .bottom-nav span {
-      display: block;
-      font-size: 20px;
-    }
+.info{
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  padding:13px;
+  border-radius:10px;
+  margin-top:12px;
+  font-size:14px;
+}
 
-    .empty {
-      text-align: center;
-      color: #64748b;
-      padding: 15px;
-    }
-  </style>
+.warning{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  padding:13px;
+  border-radius:10px;
+  margin-top:12px;
+  font-size:14px;
+}
+
+.result{
+  margin-top:15px;
+}
+
+.request-card{
+  border:1px solid #e5e7eb;
+  padding:15px;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:white;
+  border-top:1px solid #ddd;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:50;
+  box-shadow:0 -3px 12px rgba(0,0,0,.08);
+}
+
+.nav-item{
+  border:none;
+  background:none;
+  color:#667085;
+  width:20%;
+  margin:0;
+  padding:5px 2px;
+  font-size:11px;
+  font-weight:normal;
+}
+
+.nav-item .nav-icon{
+  display:block;
+  font-size:21px;
+  margin-bottom:3px;
+}
+
+.nav-item.active{
+  color:#111827;
+  font-weight:bold;
+}
+
+.profile-row{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid #eee;
+}
+
+.profile-row:last-child{
+  border-bottom:none;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:#777;
+}
+
+@media(max-width:400px){
+  .quick-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>Quick Marketplace 🛍️</h1>
-  <p>Buy, sell and deliver anywhere in Nigeria.</p>
-</header>
+<!-- HEADER -->
+<header class="header">
+  <h1>Quick Marketplace</h1>
+  <p>Buy • Sell • Request • Deliver</p>
 
-<div class="container">
-
-  <!-- SEARCH -->
   <div class="search">
-    🔎
     <input
       type="text"
       id="searchInput"
-      placeholder="Search products or shops..."
+      placeholder="Search products..."
       oninput="searchMarketplace()"
     >
   </div>
+</header>
 
-  <!-- WELCOME -->
-  <div class="welcome" id="homeSection">
-    <h2>Welcome 👋</h2>
 
+<main class="container">
+
+<!-- ================= HOME ================= -->
+<section id="homeSection" class="section active">
+
+  <div class="home-box">
+    <h2>Welcome to Quick Marketplace 👋</h2>
     <p>
-      Find products, create your shop and request anything you want.
+      Find products, create your shop, send requests and manage delivery
+      from one place.
     </p>
-
-    <button onclick="showSection('requestSection')">
-      🛒 Request a Product
-    </button>
   </div>
 
-  <!-- QUICK MENU -->
-  <div class="quick-menu">
-
-    <div class="menu-item" onclick="showSection('homeSection')">
-      <span class="menu-icon">🏠</span>
-      Home
-    </div>
-
-    <div class="menu-item" onclick="showSection('shopSection')">
-      <span class="menu-icon">🏪</span>
-      Shop
-    </div>
-
-    <div class="menu-item" onclick="showSection('requestSection')">
-      <span class="menu-icon">🛒</span>
-      Request
-    </div>
-
-    <div class="menu-item" onclick="showSection('deliverySection')">
-      <span class="menu-icon">🚚</span>
-      Delivery
-    </div>
-
-  </div>
-
-
-  <!-- SEARCH RESULT -->
-  <div class="card" id="searchResultCard" style="display:none;">
-    <h2>🔎 Search Result</h2>
+  <div id="searchResultCard" class="card" style="display:none;">
+    <h3>Search Results</h3>
     <div id="searchResults"></div>
   </div>
 
+  <div class="card">
+    <h2>Quick Menu</h2>
 
-  <!-- CREATE SHOP -->
-  <div class="card" id="shopSection">
+    <div class="quick-grid">
 
+      <div class="quick-item" onclick="showSection('shopSection')">
+        <div class="icon">🏪</div>
+        <strong>Shop</strong>
+      </div>
+
+      <div class="quick-item" onclick="showSection('requestSection')">
+        <div class="icon">🛒</div>
+        <strong>Request</strong>
+      </div>
+
+      <div class="quick-item" onclick="showSection('dashboardSection')">
+        <div class="icon">📊</div>
+        <strong>Dashboard</strong>
+      </div>
+
+      <div class="quick-item" onclick="showSection('deliverySection')">
+        <div class="icon">🚚</div>
+        <strong>Delivery</strong>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <p>🏪 Shop owners create their shops.</p>
+    <p>📦 Products are added with prices and minimum quantity.</p>
+    <p>🛒 Customers request what they need.</p>
+    <p>📊 Shop owners manage customer requests.</p>
+    <p>🚚 Delivery information is handled separately.</p>
+  </div>
+
+</section>
+
+
+<!-- ================= SHOP ================= -->
+<section id="shopSection" class="section">
+
+  <div class="card">
     <h2>🏪 Create Your Shop</h2>
+    <p>Create your shop and set the commission per item.</p>
 
     <label>Shop Owner Name</label>
-    <input
-      type="text"
-      id="ownerName"
-      placeholder="Enter your name"
-    >
+    <input id="ownerName" placeholder="Enter your name">
 
     <label>Shop Name</label>
-    <input
-      type="text"
-      id="shopName"
-      placeholder="Enter shop name"
-    >
+    <input id="shopName" placeholder="Enter shop name">
 
     <label>Shop Location</label>
-    <input
-      type="text"
-      id="shopLocation"
-      placeholder="e.g. Maiduguri"
-    >
+    <input id="shopLocation" placeholder="e.g. Maiduguri">
 
-    <label>Commission per Item (₦)</label>
-    <input
-      type="number"
-      id="commission"
-      placeholder="e.g. 50"
-      min="1"
-    >
+    <label>Commission Per Item (₦)</label>
+    <input id="commission" type="number" placeholder="e.g. 50">
 
-    <button onclick="createShop()">
-      Create Shop
-    </button>
+    <button class="green" onclick="createShop()">Create Shop</button>
 
-    <div id="shopResult" class="result"></div>
-
+    <div id="shopMessage"></div>
   </div>
 
 
-  <!-- ADD PRODUCT -->
   <div class="card">
-
     <h2>📦 Add Product</h2>
+    <p>Shop owners can set their own minimum quantity.</p>
 
     <label>Product Name</label>
-    <input
-      type="text"
-      id="productName"
-      placeholder="e.g. Rice"
-    >
+    <input id="productName" placeholder="e.g. Rice">
 
-    <label>Price (₦)</label>
-    <input
-      type="number"
-      id="productPrice"
-      placeholder="e.g. 800"
-      min="1"
-    >
+    <label>Product Price (₦)</label>
+    <input id="productPrice" type="number" placeholder="e.g. 800">
 
     <label>Minimum Quantity</label>
     <input
-      type="number"
       id="minimumQuantity"
-      placeholder="e.g. 10"
+      type="number"
       min="1"
+      placeholder="e.g. 10"
     >
 
-    <button onclick="addProduct()">
-      Add Product
-    </button>
+    <button class="blue" onclick="addProduct()">Add Product</button>
 
-    <div id="productResult" class="result"></div>
-
+    <div id="productMessage"></div>
   </div>
 
 
-  <!-- CUSTOMER REQUEST -->
-  <div class="card" id="requestSection">
+  <div class="card">
+    <h2>Current Shop</h2>
+    <div id="shopInfo"></div>
+  </div>
 
-    <h2>🛒 Request Anything</h2>
+</section>
 
+
+<!-- ================= CUSTOMER REQUEST ================= -->
+<section id="requestSection" class="section">
+
+  <div class="card">
+    <h2>🛒 Customer Request</h2>
     <p>
-      Can't find what you need? Tell the shop owner what you want.
+      Type any product you want. If it is not available, the shop owner
+      can receive your request.
     </p>
 
     <label>What do you want?</label>
-
-    <input
-      type="text"
-      id="requestProduct"
-      placeholder="e.g. Shoes, Phone, Rice..."
-    >
+    <input id="requestProduct" placeholder="e.g. Shoes, Phone, Rice">
 
     <label>Quantity</label>
-
-    <input
-      type="number"
-      id="requestQuantity"
-      placeholder="e.g. 10"
-      min="1"
-    >
+    <input id="requestQuantity" type="number" min="1" placeholder="e.g. 2">
 
     <label>Note (Optional)</label>
-
-    <input
-      type="text"
+    <textarea
       id="requestNote"
-      placeholder="Any extra information..."
-    >
+      placeholder="Write any additional information..."
+    ></textarea>
 
-    <button onclick="sendRequest()">
+    <button class="green" onclick="sendRequest()">
       Send Request
     </button>
 
-    <div id="requestResult" class="result"></div>
-
+    <div id="requestMessage"></div>
   </div>
 
-
-  <!-- SHOP OWNER DASHBOARD -->
-  <div class="card" id="dashboardSection">
-
-    <h2>🏪 Shop Owner Dashboard</h2>
-
-    <div id="shopInfo"></div>
-
-    <div class="dashboard-box">
-      <strong>📦 My Product</strong>
-      <div id="dashboardProduct"></div>
-    </div>
-
-    <h3>🛒 Customer Requests</h3>
-
-    <div id="requestsList"></div>
-
+  <div class="card">
+    <h2>My Requests</h2>
+    <div id="myRequests"></div>
   </div>
 
+</section>
 
-  <!-- DELIVERY -->
-  <div class="card" id="deliverySection">
 
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboardSection" class="section">
+
+  <div class="card">
+    <h2>📊 Shop Owner Dashboard</h2>
+    <p>Manage your shop and customer requests here.</p>
+  </div>
+
+  <div class="card">
+    <h3>Shop Information</h3>
+    <div id="dashboardShop"></div>
+  </div>
+
+  <div class="card">
+    <h3>Product</h3>
+    <div id="dashboardProduct"></div>
+  </div>
+
+  <div class="card">
+    <h3>Customer Requests</h3>
+    <div id="dashboardRequests"></div>
+  </div>
+
+</section>
+
+
+<!-- ================= DELIVERY ================= -->
+<section id="deliverySection" class="section">
+
+  <div class="card">
     <h2>🚚 Delivery</h2>
+    <p>
+      Enter the origin, destination and transport cost to calculate
+      the customer delivery payment.
+    </p>
 
     <label>From</label>
-
-    <input
-      type="text"
-      id="fromLocation"
-      placeholder="e.g. Kano"
-    >
+    <input id="deliveryFrom" placeholder="e.g. Kano">
 
     <label>To</label>
-
-    <input
-      type="text"
-      id="toLocation"
-      placeholder="e.g. Maiduguri"
-    >
+    <input id="deliveryTo" placeholder="e.g. Maiduguri">
 
     <label>Order Amount (₦)</label>
+    <input id="orderAmount" type="number" placeholder="e.g. 60000">
 
-    <input
-      type="number"
-      id="orderAmount"
-      placeholder="e.g. 50000"
-      min="1"
-    >
+    <label>Transport / Delivery Fee (₦)</label>
+    <input id="deliveryFee" type="number" placeholder="e.g. 3000">
 
-    <label>Delivery Fee (₦)</label>
-
-    <input
-      type="number"
-      id="deliveryFee"
-      placeholder="e.g. 20000"
-      min="1"
-    >
-
-    <button onclick="calculateDelivery()">
+    <button class="orange" onclick="calculateDelivery()">
       Calculate Delivery
     </button>
 
-    <div id="deliveryResult" class="result"></div>
-
+    <div id="deliveryResult"></div>
   </div>
 
-
-  <!-- PROFILE -->
   <div class="card">
-
-    <h2>👤 Profile</h2>
-
-    <p>
-      Manage your Quick Marketplace account and shop.
-    </p>
-
-    <button onclick="showSection('dashboardSection')">
-      🏪 Open Shop Dashboard
-    </button>
-
+    <h3>Delivery Information</h3>
+    <p>Nearby routes can be targeted for around 1–2 days.</p>
+    <p>Long-distance routes may take around 5–7 days depending on the route.</p>
+    <p>Routes can be from anywhere in Nigeria to anywhere in Nigeria.</p>
   </div>
 
-</div>
+</section>
 
 
-<!-- BOTTOM NAVIGATION -->
-<div class="bottom-nav">
+<!-- ================= PROFILE ================= -->
+<section id="profileSection" class="section">
 
-  <button onclick="showSection('homeSection')">
-    <span>🏠</span>
+  <div class="card">
+    <h2>👤 Profile</h2>
+    <p>Your Quick Marketplace information.</p>
+
+    <div id="profileInfo"></div>
+  </div>
+
+  <div class="card">
+    <h3>Marketplace Rules</h3>
+    <p>• Shop owner sets commission per item.</p>
+    <p>• Shop owner sets minimum product quantity.</p>
+    <p>• Customer can request products.</p>
+    <p>• Bulk orders may receive 50% delivery support.</p>
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= BOTTOM NAVIGATION ================= -->
+<nav class="bottom-nav">
+
+  <button
+    class="nav-item active"
+    id="navHome"
+    onclick="showSection('homeSection')"
+  >
+    <span class="nav-icon">🏠</span>
     Home
   </button>
 
-  <button onclick="showSection('shopSection')">
-    <span>🏪</span>
+  <button
+    class="nav-item"
+    id="navShop"
+    onclick="showSection('shopSection')"
+  >
+    <span class="nav-icon">🏪</span>
     Shop
   </button>
 
-  <button onclick="showSection('requestSection')">
-    <span>🛒</span>
+  <button
+    class="nav-item"
+    id="navRequest"
+    onclick="showSection('requestSection')"
+  >
+    <span class="nav-icon">🛒</span>
     Request
   </button>
 
-  <button onclick="showSection('dashboardSection')">
-    <span>📊</span>
+  <button
+    class="nav-item"
+    id="navDashboard"
+    onclick="showSection('dashboardSection')"
+  >
+    <span class="nav-icon">📊</span>
     Dashboard
   </button>
 
-  <button onclick="showSection('deliverySection')">
-    <span>🚚</span>
+  <button
+    class="nav-item"
+    id="navDelivery"
+    onclick="showSection('deliverySection')"
+  >
+    <span class="nav-icon">🚚</span>
     Delivery
   </button>
 
-</div>
+</nav>
 
 
 <script>
 
-  // NAVIGATION
-  function showSection(id) {
+const sections = [
+  "homeSection",
+  "shopSection",
+  "requestSection",
+  "dashboardSection",
+  "deliverySection",
+  "profileSection"
+];
 
-    const section =
-      document.getElementById(id);
+function showSection(sectionId){
 
-    if (section) {
-
-      section.scrollIntoView({
-        behavior: "smooth"
-      });
-
+  sections.forEach(id=>{
+    const section=document.getElementById(id);
+    if(section){
+      section.classList.remove("active");
     }
+  });
+
+  const selected=document.getElementById(sectionId);
+
+  if(selected){
+    selected.classList.add("active");
   }
 
+  document.querySelectorAll(".nav-item").forEach(item=>{
+    item.classList.remove("active");
+  });
 
-  // CREATE SHOP
-  function createShop() {
+  if(sectionId==="homeSection"){
+    document.getElementById("navHome").classList.add("active");
+  }
 
-    const ownerName =
-      document.getElementById("ownerName")
-      .value
-      .trim();
+  if(sectionId==="shopSection"){
+    document.getElementById("navShop").classList.add("active");
+  }
 
-    const shopName =
-      document.getElementById("shopName")
-      .value
-      .trim();
+  if(sectionId==="requestSection"){
+    document.getElementById("navRequest").classList.add("active");
+  }
 
-    const shopLocation =
-      document.getElementById("shopLocation")
-      .value
-      .trim();
+  if(sectionId==="dashboardSection"){
+    document.getElementById("navDashboard").classList.add("active");
+  }
 
-    const commission =
-      Number(
-        document.getElementById("commission")
-        .value
-      );
+  if(sectionId==="deliverySection"){
+    document.getElementById("navDelivery").classList.add("active");
+  }
 
-    if (
-      !ownerName ||
-      !shopName ||
-      !shopLocation ||
-      commission <= 0
-    ) {
+  loadAllData();
 
-      alert(
-        "Please fill in all shop details correctly."
-      );
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+/* ================= SHOP ================= */
+
+function createShop(){
+
+  const ownerName=document.getElementById("ownerName").value.trim();
+  const shopName=document.getElementById("shopName").value.trim();
+  const shopLocation=document.getElementById("shopLocation").value.trim();
+  const commission=Number(document.getElementById("commission").value);
+
+  const message=document.getElementById("shopMessage");
+
+  if(!ownerName || !shopName || !shopLocation || commission<=0){
+
+    message.innerHTML=
+      `<div class="warning">
+        Please fill all shop information and enter a valid commission.
+      </div>`;
+
+    return;
+  }
+
+  const shop={
+    ownerName,
+    shopName,
+    shopLocation,
+    commission
+  };
+
+  localStorage.setItem(
+    "quickMarketplaceShop",
+    JSON.stringify(shop)
+  );
+
+  message.innerHTML=
+    `<div class="info">
+      ✅ Shop created successfully!
+    </div>`;
+
+  loadAllData();
+}
+
+
+/* ================= PRODUCT ================= */
+
+function addProduct(){
+
+  const name=document.getElementById("productName").value.trim();
+  const price=Number(document.getElementById("productPrice").value);
+  const minimum=Number(
+    document.getElementById("minimumQuantity").value
+  );
+
+  const message=document.getElementById("productMessage");
+
+  const shop=JSON.parse(
+    localStorage.getItem("quickMarketplaceShop")
+  );
+
+  if(!shop){
+
+    message.innerHTML=
+      `<div class="warning">
+        Please create your shop first.
+      </div>`;
+
+    return;
+  }
+
+  if(!name || price<=0 || minimum<=0){
+
+    message.innerHTML=
+      `<div class="warning">
+        Please enter product name, price and minimum quantity.
+      </div>`;
+
+    return;
+  }
+
+  const product={
+    name,
+    price,
+    minimum
+  };
+
+  localStorage.setItem(
+    "quickMarketplaceProduct",
+    JSON.stringify(product)
+  );
+
+  message.innerHTML=
+    `<div class="info">
+      ✅ Product added successfully!
+    </div>`;
+
+  loadAllData();
+}
+
+
+/* ================= REQUEST ================= */
+
+function sendRequest(){
+
+  const productName=
+    document.getElementById("requestProduct").value.trim();
+
+  const quantity=
+    Number(document.getElementById("requestQuantity").value);
+
+  const note=
+    document.getElementById("requestNote").value.trim();
+
+  const message=
+    document.getElementById("requestMessage");
+
+  if(!productName || quantity<=0){
+
+    message.innerHTML=
+      `<div class="warning">
+        Please enter the product and quantity.
+      </div>`;
+
+    return;
+  }
+
+  const product=JSON.parse(
+    localStorage.getItem("quickMarketplaceProduct")
+  );
+
+  const shop=JSON.parse(
+    localStorage.getItem("quickMarketplaceShop")
+  );
+
+  let requests=JSON.parse(
+    localStorage.getItem("quickMarketplaceRequests")
+  ) || [];
+
+  let request={
+    productName,
+    quantity,
+    note,
+    status:"Pending",
+    date:new Date().toLocaleString()
+  };
+
+  if(product &&
+     product.name.toLowerCase()===productName.toLowerCase()){
+
+    if(quantity < product.minimum){
+
+      message.innerHTML=
+        `<div class="warning">
+          Minimum quantity for this product is ${product.minimum}.
+        </div>`;
 
       return;
     }
 
-    const shop = {
+    request.price=product.price;
+    request.total=product.price*quantity;
 
-      ownerName: ownerName,
+    if(shop){
+      request.commission=shop.commission*quantity;
+      request.shopOwnerAmount=
+        request.total-request.commission;
+    }
+  }
 
-      shopName: shopName,
+  requests.push(request);
 
-      location: shopLocation,
+  localStorage.setItem(
+    "quickMarketplaceRequests",
+    JSON.stringify(requests)
+  );
 
-      commission: commission
+  message.innerHTML=
+    `<div class="info">
+      ✅ Request sent successfully!
+    </div>`;
 
-    };
+  document.getElementById("requestProduct").value="";
+  document.getElementById("requestQuantity").value="";
+  document.getElementById("requestNote").value="";
 
-    localStorage.setItem(
-      "quickMarketplaceShop",
-      JSON.stringify(shop)
-    );
+  loadAllData();
+}
 
-    const result =
-      document.getElementById("shopResult");
 
-    result.style.display = "block";
+/* ================= DASHBOARD ================= */
 
-    result.innerHTML =
-      '<span class="success">' +
-      'Shop created successfully!' +
-      '</span><br><br>' +
+function loadDashboard(){
 
-      "Owner: " +
-      ownerName +
-      "<br>" +
+  const shop=JSON.parse(
+    localStorage.getItem("quickMarketplaceShop")
+  );
 
-      "Shop: " +
-      shopName +
-      "<br>" +
+  const product=JSON.parse(
+    localStorage.getItem("quickMarketplaceProduct")
+  );
 
-      "Location: " +
-      shopLocation +
-      "<br>" +
+  const requests=JSON.parse(
+    localStorage.getItem("quickMarketplaceRequests")
+  ) || [];
 
-      "Commission: ₦" +
-      commission.toLocaleString() +
-      " per item.";
 
-    loadDashboard();
+  const shopBox=document.getElementById("dashboardShop");
+
+  if(!shop){
+
+    shopBox.innerHTML=
+      `<div class="empty">
+        No shop created yet.
+      </div>`;
+
+  }else{
+
+    shopBox.innerHTML=`
+      <div class="profile-row">
+        <strong>Owner</strong>
+        <span>${escapeHTML(shop.ownerName)}</span>
+      </div>
+
+      <div class="profile-row">
+        <strong>Shop</strong>
+        <span>${escapeHTML(shop.shopName)}</span>
+      </div>
+
+      <div class="profile-row">
+        <strong>Location</strong>
+        <span>${escapeHTML(shop.shopLocation)}</span>
+      </div>
+
+      <div class="profile-row">
+        <strong>Commission</strong>
+        <span>₦${shop.commission}</span>
+      </div>
+    `;
   }
 
 
-  // ADD PRODUCT
-  function addProduct() {
+  const productBox=document.getElementById("dashboardProduct");
 
-    const name =
-      document.getElementById("productName")
-      .value
-      .trim();
+  if(!product){
 
-    const price =
-      Number(
-        document.getElementById("productPrice")
-        .value
-      );
+    productBox.innerHTML=
+      `<div class="empty">
+        No product added yet.
+      </div>`;
 
-    const minimum =
-      Number(
-        document.getElementById("minimumQuantity")
-        .value
-      );
+  }else{
 
-    if (
-      !name ||
-      price <= 0 ||
-      minimum <= 0
-    ) {
-
-      alert(
-        "Please fill in all product details correctly."
-      );
-
-      return;
-    }
-
-    const product = {
-
-      name: name,
-
-      price: price,
-
-      minimumQuantity: minimum
-
-    };
-
-    localStorage.setItem(
-      "quickMarketplaceProduct",
-      JSON.stringify(product)
-    );
-
-    const result =
-      document.getElementById("productResult");
-
-    result.style.display = "block";
-
-    result.innerHTML =
-      '<span class="success">' +
-      'Product added successfully!' +
-      '</span><br><br>' +
-
-      "Product: " +
-      name +
-      "<br>" +
-
-      "Price: ₦" +
-      price.toLocaleString() +
-      "<br>" +
-
-      "Minimum quantity: " +
-      minimum;
-
-    loadDashboard();
+    productBox.innerHTML=`
+      <div class="request-card">
+        <h3>${escapeHTML(product.name)}</h3>
+        <p>Price: ₦${product.price}</p>
+        <p>Minimum quantity: ${product.minimum}</p>
+      </div>
+    `;
   }
 
 
-  // CUSTOMER REQUEST
-  function sendRequest() {
+  const requestBox=
+    document.getElementById("dashboardRequests");
 
-    const product =
-      document.getElementById("requestProduct")
-      .value
-      .trim();
+  if(requests.length===0){
 
-    const quantity =
-      Number(
-        document.getElementById("requestQuantity")
-        .value
-      );
+    requestBox.innerHTML=
+      `<div class="empty">
+        No customer requests yet.
+      </div>`;
 
-    const note =
-      document.getElementById("requestNote")
-      .value
-      .trim();
+    return;
+  }
 
-    if (
-      !product ||
-      quantity <= 0
-    ) {
+  requestBox.innerHTML="";
 
-      alert(
-        "Please enter the product name and quantity."
-      );
+  requests.forEach((request,index)=>{
 
-      return;
-    }
+    requestBox.innerHTML+=`
+      <div class="request-card">
 
-    const savedProduct =
-      JSON.parse(
-        localStorage.getItem(
-          "quickMarketplaceProduct"
-        )
-      );
+        <h3>${escapeHTML(request.productName)}</h3>
 
-    const shop =
-      JSON.parse(
-        localStorage.getItem(
-          "quickMarketplaceShop"
-        )
-      );
+        <p>
+          Quantity: <strong>${request.quantity}</strong>
+        </p>
 
-    const result =
-      document.getElementById(
-        "requestResult"
-      );
+        ${
+          request.total
+          ? `<p>Total: <strong>₦${request.total}</strong></p>`
+          : ""
+        }
 
-    result.style.display = "block";
+        ${
+          request.note
+          ? `<p>Note: ${escapeHTML(request.note)}</p>`
+          : ""
+        }
+
+        <p>Date: ${escapeHTML(request.date)}</p>
+
+        <br>
+
+        <span class="status">
+          ${escapeHTML(request.status)}
+        </span>
+
+        ${
+          request.status==="Pending"
+          ? `
+            <button
+              class="green"
+              onclick="acceptRequest(${index})"
+            >
+              Accept Request
+            </button>
+
+            <button
+              class="red"
+              onclick="rejectRequest(${index})"
+            >
+              Reject Request
+            </button>
+          `
+          : ""
+        }
+
+      </div>
+    `;
+  });
+}
 
 
-    // PRODUCT EXISTS
-    if (
-      savedProduct &&
-      savedProduct.name.toLowerCase() ===
-      product.toLowerCase()
-    ) {
+/* ================= ACCEPT ================= */
 
-      if (
-        quantity <
-        savedProduct.minimumQuantity
-      ) {
+function acceptRequest(index){
 
-        result.innerHTML =
-          "Minimum quantity for this product is " +
-          savedProduct.minimumQuantity +
-          ".";
+  let requests=JSON.parse(
+    localStorage.getItem("quickMarketplaceRequests")
+  ) || [];
 
-        return;
+  if(!requests[index]) return;
+
+  requests[index].status="Accepted";
+
+  localStorage.setItem(
+    "quickMarketplaceRequests",
+    JSON.stringify(requests)
+  );
+
+  loadAllData();
+}
+
+
+/* ================= REJECT ================= */
+
+function rejectRequest(index){
+
+  let requests=JSON.parse(
+    localStorage.getItem("quickMarketplaceRequests")
+  ) || [];
+
+  if(!requests[index]) return;
+
+  requests[index].status="Rejected";
+
+  localStorage.setItem(
+    "quickMarketplaceRequests",
+    JSON.stringify(requests)
+  );
+
+  loadAllData();
+}
+
+
+/* ================= DELIVERY ================= */
+
+function calculateDelivery(){
+
+  const from=
+    document.getElementById("deliveryFrom").value.trim();
+
+  const to=
+    document.getElementById("deliveryTo").value.trim();
+
+  const orderAmount=
+    Number(document.getElementById("orderAmount").value);
+
+  const deliveryFee=
+    Number(document.getElementById("deliveryFee").value);
+
+  const result=
+    document.getElementById("deliveryResult");
+
+  if(!from || !to || orderAmount<=0 || deliveryFee<=0){
+
+    result.innerHTML=
+      `<div class="warning">
+        Please enter all delivery information.
+      </div>`;
+
+    return;
+  }
+
+  let customerPays=deliveryFee;
+  let appPays=0;
+
+  if(orderAmount>=50000){
+
+    appPays=deliveryFee/2;
+    customerPays=deliveryFee/2;
+  }
+
+  result.innerHTML=`
+    <div class="info">
+
+      <strong>Delivery Summary</strong>
+
+      <p>From: ${escapeHTML(from)}</p>
+      <p>To: ${escapeHTML(to)}</p>
+      <p>Order Amount: ₦${orderAmount}</p>
+      <p>Total Delivery Fee: ₦${deliveryFee}</p>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #ddd">
+
+      <p>App Pays: <strong>₦${appPays}</strong></p>
+      <p>Customer Pays: <strong>₦${customerPays}</strong></p>
+
+      ${
+        orderAmount>=50000
+        ? `<p>✅ 50% bulk-order delivery support applied.</p>`
+        : `<p>50% support applies when order reaches ₦50,000.</p>`
       }
 
-      const total =
-        savedProduct.price *
-        quantity;
-
-      const commission =
-        shop
-          ? shop.commission * quantity
-          : 0;
-
-      const shopOwnerAmount =
-        total - commission;
-
-      result.innerHTML =
-        '<span class="success">' +
-        'Product found!' +
-        '</span><br><br>' +
-
-        "Product: " +
-        savedProduct.name +
-        "<br>" +
-
-        "Quantity: " +
-        quantity +
-        "<br>" +
-
-        "Price per item: ₦" +
-        savedProduct.price.toLocaleString() +
-        "<br>" +
-
-        "Total: ₦" +
-        total.toLocaleString() +
-        "<br>" +
-
-        "Commission: ₦" +
-        commission.toLocaleString() +
-        "<br>" +
-
-        "Shop Owner Receives: ₦" +
-        shopOwnerAmount.toLocaleString();
-
-      return;
-    }
+    </div>
+  `;
+}
 
 
-    // PRODUCT NOT FOUND
-    const request = {
+/* ================= SEARCH ================= */
 
-      product: product,
+function searchMarketplace(){
 
-      quantity: quantity,
+  const query=
+    document.getElementById("searchInput").value
+    .trim()
+    .toLowerCase();
 
-      note: note,
+  const resultCard=
+    document.getElementById("searchResultCard");
 
-      date: new Date()
-        .toLocaleString(),
+  const results=
+    document.getElementById("searchResults");
 
-      status: "Pending"
+  if(!query){
 
-    };
+    resultCard.style.display="none";
+    results.innerHTML="";
+    return;
+  }
 
-    let requests =
-      JSON.parse(
-        localStorage.getItem(
-          "quickMarketplaceRequests"
-        )
-      ) || [];
+  const product=JSON.parse(
+    localStorage.getItem("quickMarketplaceProduct")
+  );
 
-    requests.push(request);
+  resultCard.style.display="block";
 
-    localStorage.setItem(
-      "quickMarketplaceRequests",
-      JSON.stringify(requests)
-    );
+  if(!product){
 
-    result.innerHTML =
-      '<span class="success">' +
-      'Request sent successfully!' +
-      '</span><br><br>' +
+    results.innerHTML=
+      `<div class="empty">
+        No products found.
+      </div>`;
 
-      "Product: " +
-      product +
-      "<br>" +
+    return;
+  }
 
-      "Quantity: " +
-      quantity +
-      "<br>" +
+  if(product.name.toLowerCase().includes(query)){
 
-      "Note: " +
-      (note || "None") +
-      "<br><br>" +
+    results.innerHTML=`
+      <div class="request-card">
+        <h3>${escapeHTML(product.name)}</h3>
+        <p>Price: ₦${product.price}</p>
+        <p>Minimum quantity: ${product.minimum}</p>
 
-      "The shop owner will review your request.";
+        <button
+          class="green"
+          onclick="showSection('requestSection')"
+        >
+          Request This Product
+        </button>
+      </div>
+    `;
 
-    load
+  }else{
+
+    results.innerHTML=`
+      <div class="empty">
+        Product not found.
+        <br><br>
+        You can still send a request for it.
+        <button
+          class="blue"
+          onclick="showSection('requestSection')"
+        >
+          Send Product Request
+        </button>
+      </div>
+    `;
+  }
+}
+
+
+/* ================= MY REQUESTS ================= */
+
+function loadMyRequests(){
+
+  const requests=JSON.parse(
+    localStorage.getItem("quickMarketplaceRequests")
+  ) || [];
+
+  const box=document.getElementById("myRequests");
+
+  if(requests.length===0){
+
+    box.innerHTML=
+      `<div class="empty">
+        You have no requests yet.
+      </div>`;
+
+    return;
+  }
+
+  box.innerHTML="";
+
+  requests.forEach(request=>{
+
+    box.innerHTML+=`
+      <div class="request-card">
+
+        <h3>${escapeHTML(request.productName)}</h3>
+
+        <p>Quantity: ${request.quantity}</p>
+
+        ${
+          request.total
+          ? `<p>Total: ₦${request.total}</p>`
+          : ""
+        }
+
+        <span class="status">
+          ${escapeHTML(request.status)}
+        </span>
+
+      </div>
+    `;
+  });
+}
+
+
+/* ================= SHOP INFO ================= */
+
+function loadShopInfo(){
+
+  const shop=JSON.parse(
+    localStorage.getItem("quickMarketplaceShop")
+  );
+
+  const box=document.getElementById("shopInfo");
+
+  if(!shop){
+
+    box.innerHTML=
+      `<div class="empty">
+        No shop created yet.
+      </div>`;
+
+    return;
+  }
+
+  box.innerHTML=`
+    <div class="profile-row">
+      <strong>Owner</strong>
+      <span>${escapeHTML(shop.ownerName)}</span>
+    </div>
+
+    <div class="profile-row">
+      <strong>Shop</strong>
+      <span>${escapeHTML(shop.shopName)}</span>
+    </div>
+
+    <div class="profile-row">
+      <strong>Location</strong>
+      <span>${escapeHTML(shop.shopLocation)}</span>
+    </div>
+
+    <div class="profile-row">
+      <strong>Commission</strong>
+      <span>₦${shop.commission} / item</span>
+    </div>
+  `;
+}
+
+
+/* ================= PROFILE ================= */
+
+function loadProfile(){
+
+  const shop=JSON.parse(
+    localStorage.getItem("quickMarketplaceShop")
+  );
+
+  const box=document.getElementById("profileInfo");
+
+  if(!shop){
+
+    box.innerHTML=
+      `<div class="empty">
+        No profile information yet.
+      </div>`;
+
+    return;
+  }
+
+  box.innerHTML=`
+    <div class="profile-row">
+      <strong>Name</strong>
+      <span>${escapeHTML(shop.ownerName)}</span>
+    </div>
+
+    <div class="profile-row">
+      <strong>Shop</strong>
+      <span>${escapeHTML(shop.shopName)}</span>
+    </div>
+
+    <div class="profile-row">
+      <strong>Location</strong>
+      <span>${escapeHTML(shop.shopLocation)}</span>
+    </div>
+  `;
+}
+
+
+/* ================= LOAD EVERYTHING ================= */
+
+function loadAllData(){
+
+  loadShopInfo();
+  loadDashboard();
+  loadMyRequests();
+  loadProfile();
+}
+
+
+/* ================= SECURITY ================= */
+
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* ================= START ================= */
+
+window.addEventListener("load",()=>{
+
+  loadAllData();
+
+});
+
+</script>
+
+</body>
+</html>
