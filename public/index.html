@@ -1963,57 +1963,50 @@ async function adminLogin() {
     return;
   }
 
-  message.textContent = "Logging in...";
+  try {
+    message.textContent = "Connecting to Supabase...";
 
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
-  if (error) {
-    message.textContent = "Login failed: " + error.message;
-    return;
+    if (error) {
+      message.textContent = "Login error: " + error.message;
+      return;
+    }
+
+    if (!data.user) {
+      message.textContent = "Login failed: no user found.";
+      return;
+    }
+
+    message.textContent = "Checking admin access...";
+
+    const { data: admin, error: adminError } =
+      await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+    if (adminError) {
+      message.textContent =
+        "Admin check error: " + adminError.message;
+      return;
+    }
+
+    if (!admin) {
+      message.textContent = "This account is not an admin.";
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    message.textContent = "Admin login successful!";
+  } catch (error) {
+    message.textContent = "System error: " + error.message;
   }
-
-  const { data: admin, error: adminError } =
-    await supabaseClient
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-
-  if (adminError || !admin) {
-    message.textContent = "This account is not an admin.";
-    await supabaseClient.auth.signOut();
-    return;
-  }
-
-  message.textContent = "Admin login successful!";
-  }
-</script>
-<div id="adminSection" style="display:block; padding:20px;">
-  <h2>Admin Panel</h2>
-
-  <div class="card">
-    <h3>Admin Login</h3>
-
-    <input
-      type="email"
-      id="adminEmail"
-      placeholder="Admin Email"
-    >
-
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="Admin Password"
-    >
-
-    <button onclick="adminLogin()">Login as Admin</button>
-
-    <p id="adminMessage"></p>
-  </div>
-</div>
+} 
 </body><
 </html>
