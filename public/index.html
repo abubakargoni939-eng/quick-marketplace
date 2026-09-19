@@ -1956,5 +1956,27 @@ window.addEventListener(
 
 </script>
 
-</body>
+</body><div id="adminSection" style="display:none; padding:20px;">
+  <h2>Admin Panel</h2>
+
+  <div class="card">
+    <h3>Admin Login</h3>
+
+    <input
+      type="email"
+      id="adminEmail"
+      placeholder="Admin Email"
+    >
+
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="Admin Password"
+    >
+
+    <button onclick="adminLogin()">Login as Admin</button>
+
+    <p id="adminMessage"></p>
+  </div>
+</div>
 </html>
