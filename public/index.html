@@ -3,67 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Quick Marketplace</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
       color: #222;
     }
 
     header {
-      background: #111;
+      background: linear-gradient(135deg, #111827, #2563eb);
       color: white;
-      padding: 20px;
-      text-align: center;
+      padding: 28px 20px 30px;
+      border-radius: 0 0 25px 25px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
     }
 
     .container {
-      padding: 20px;
       max-width: 700px;
       margin: auto;
+      padding: 18px;
+      padding-bottom: 90px;
+    }
+
+    .search {
+      background: white;
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: -8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .search input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    .welcome {
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .welcome h2 {
+      margin-top: 0;
+    }
+
+    .quick-menu {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .menu-item {
+      background: white;
+      padding: 14px 5px;
+      text-align: center;
+      border-radius: 14px;
+      font-size: 13px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+
+    .menu-icon {
+      font-size: 25px;
+      display: block;
+      margin-bottom: 5px;
     }
 
     .card {
       background: white;
       padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 20px;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .card h2 {
+      margin-top: 0;
     }
 
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
 
-    input,
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+    }
+
     button {
       width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 14px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
-    button {
-      background: #111;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
+    button:hover {
+      background: #1d4ed8;
     }
 
     .result {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 8px;
       display: none;
+      background: #f1f5f9;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 10px;
       line-height: 1.7;
     }
 
@@ -71,21 +155,129 @@
       color: green;
       font-weight: bold;
     }
+
+    .section-title {
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 5px;
+      box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .bottom-nav button {
+      background: transparent;
+      color: #333;
+      margin: 0;
+      padding: 6px 3px;
+      font-size: 12px;
+      width: auto;
+    }
+
+    .bottom-nav span {
+      display: block;
+      font-size: 21px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .hero-button {
+      background: #2563eb;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 450px) {
+      header h1 {
+        font-size: 27px;
+      }
+
+      .quick-menu {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- HEADER -->
   <header>
-    <h1>Quick Marketplace</h1>
-    <p>Your marketplace app is ready.</p>
+    <h1>Quick Marketplace 🛍️</h1>
+    <p>Buy, sell and deliver anywhere in Nigeria.</p>
   </header>
+
 
   <div class="container">
 
+    <!-- SEARCH -->
+    <div class="search">
+      🔎
+      <input
+        type="text"
+        placeholder="Search for products or shops..."
+      >
+    </div>
+
+
+    <!-- WELCOME -->
+    <div class="welcome">
+      <h2>Welcome 👋</h2>
+      <p>
+        Find products from shops and request anything you want.
+      </p>
+
+      <button class="hero-button"
+        onclick="showSection('requestSection')">
+        Request a Product
+      </button>
+    </div>
+
+
+    <!-- QUICK MENU -->
+    <div class="quick-menu">
+
+      <div class="menu-item"
+        onclick="showSection('homeSection')">
+        <span class="menu-icon">🏠</span>
+        Home
+      </div>
+
+      <div class="menu-item"
+        onclick="showSection('shopSection')">
+        <span class="menu-icon">🏪</span>
+        Shops
+      </div>
+
+      <div class="menu-item"
+        onclick="showSection('requestSection')">
+        <span class="menu-icon">🛒</span>
+        Request
+      </div>
+
+      <div class="menu-item"
+        onclick="showSection('deliverySection')">
+        <span class="menu-icon">🚚</span>
+        Delivery
+      </div>
+
+    </div>
+
+
     <!-- CREATE SHOP -->
-    <div class="card">
-      <h2>Create Your Shop</h2>
+    <div class="card" id="shopSection">
+
+      <h2>🏪 Create Your Shop</h2>
 
       <label>Shop Owner Name</label>
       <input
@@ -105,39 +297,43 @@
       <input
         type="text"
         id="shopLocation"
-        placeholder="e.g. "
+        placeholder="e.g. Maiduguri"
       >
 
       <label>Commission per Item (₦)</label>
       <input
         type="number"
         id="commission"
-        placeholder="e.g. "
+        placeholder="e.g. 50"
         min="1"
       >
 
-      <button onclick="createShop()">Create Shop</button>
+      <button onclick="createShop()">
+        Create Shop
+      </button>
 
       <div id="shopResult" class="result"></div>
+
     </div>
 
 
     <!-- ADD PRODUCT -->
     <div class="card">
-      <h2>Add Product</h2>
+
+      <h2>📦 Add Product</h2>
 
       <label>Product Name</label>
       <input
         type="text"
         id="productName"
-        placeholder="e.g. "
+        placeholder="e.g. Rice"
       >
 
       <label>Price (₦)</label>
       <input
         type="number"
         id="productPrice"
-        placeholder="e.g. (₦)"
+        placeholder="e.g. 800"
         min="1"
       >
 
@@ -145,79 +341,98 @@
       <input
         type="number"
         id="minimumQuantity"
-        placeholder="e.g. "
+        placeholder="e.g. 10"
         min="1"
       >
 
-      <button onclick="addProduct()">Add Product</button>
+      <button onclick="addProduct()">
+        Add Product
+      </button>
 
       <div id="productResult" class="result"></div>
+
     </div>
 
 
     <!-- CUSTOMER REQUEST -->
-    <div class="card">
-      <h2>Customer Request 🛒</h2>
+    <div class="card" id="requestSection">
+
+      <h2>🛒 Request Anything</h2>
+
+      <p>
+        Can't find what you need? Tell the shop owner what you want.
+      </p>
 
       <label>What do you want?</label>
+
       <input
         type="text"
         id="requestProduct"
-        placeholder="e.g. Rice, Shoes, Phone..."
+        placeholder="e.g. Shoes, Phone, Rice..."
       >
 
       <label>Quantity</label>
+
       <input
         type="number"
         id="requestQuantity"
-        placeholder="e.g. "
+        placeholder="e.g. 10"
         min="1"
       >
 
       <label>Note (Optional)</label>
+
       <input
         type="text"
         id="requestNote"
         placeholder="Any extra information..."
       >
 
-      <button onclick="sendRequest()">Send Request</button>
+      <button onclick="sendRequest()">
+        Send Request
+      </button>
 
       <div id="requestResult" class="result"></div>
+
     </div>
 
 
     <!-- DELIVERY -->
-    <div class="card">
-      <h2>Delivery</h2>
+    <div class="card" id="deliverySection">
+
+      <h2>🚚 Delivery</h2>
 
       <label>From</label>
+
       <input
         type="text"
         id="fromLocation"
-        placeholder="e.g. "
+        placeholder="e.g. Kano"
       >
 
       <label>To</label>
+
       <input
         type="text"
         id="toLocation"
-        placeholder="e.g. "
+        placeholder="e.g. Maiduguri"
       >
 
       <label>Order Amount (₦)</label>
+
       <input
         type="number"
         id="orderAmount"
-        placeholder="e.g. (₦)"
+        placeholder="e.g. 50000"
         min="1"
       >
 
       <label>Delivery Fee (₦)</label>
+
       <input
         type="number"
         id="deliveryFee"
-        placeholder="e.g. (₦)"
+        placeholder="e.g. 20000"
         min="1"
       >
 
@@ -226,12 +441,74 @@
       </button>
 
       <div id="deliveryResult" class="result"></div>
+
+    </div>
+
+
+    <!-- PROFILE -->
+    <div class="card">
+
+      <h2>👤 Profile</h2>
+
+      <p>
+        Manage your Quick Marketplace account and shop.
+      </p>
+
+      <button onclick="showSection('shopSection')">
+        Manage My Shop
+      </button>
+
     </div>
 
   </div>
 
 
+  <!-- BOTTOM NAVIGATION -->
+  <div class="bottom-nav">
+
+    <button onclick="showSection('homeSection')">
+      <span>🏠</span>
+      Home
+    </button>
+
+    <button onclick="showSection('shopSection')">
+      <span>🏪</span>
+      Shops
+    </button>
+
+    <button onclick="showSection('requestSection')">
+      <span>🛒</span>
+      Request
+    </button>
+
+    <button onclick="showSection('deliverySection')">
+      <span>🚚</span>
+      Delivery
+    </button>
+
+    <button onclick="window.scrollTo(0, document.body.scrollHeight)">
+      <span>👤</span>
+      Profile
+    </button>
+
+  </div>
+
+
   <script>
+
+    // NAVIGATION
+    function showSection(id) {
+
+      const section =
+        document.getElementById(id);
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth"
+        });
+      }
+    }
+
 
     // CREATE SHOP
     function createShop() {
@@ -246,7 +523,9 @@
         document.getElementById("shopLocation").value.trim();
 
       const commission =
-        Number(document.getElementById("commission").value);
+        Number(
+          document.getElementById("commission").value
+        );
 
       if (
         !ownerName ||
@@ -254,15 +533,24 @@
         !shopLocation ||
         commission <= 0
       ) {
-        alert("Please fill in all shop details correctly.");
+
+        alert(
+          "Please fill in all shop details correctly."
+        );
+
         return;
       }
 
       const shop = {
+
         ownerName: ownerName,
+
         shopName: shopName,
+
         location: shopLocation,
+
         commission: commission
+
       };
 
       localStorage.setItem(
@@ -276,13 +564,26 @@
       result.style.display = "block";
 
       result.innerHTML =
-        '<span class="success">Shop created successfully!</span><br><br>' +
-        "Owner: " + ownerName + "<br>" +
-        "Shop: " + shopName + "<br>" +
-        "Location: " + shopLocation + "<br>" +
+        '<span class="success">' +
+        'Shop created successfully!' +
+        '</span><br><br>' +
+
+        "Owner: " +
+        ownerName +
+        "<br>" +
+
+        "Shop: " +
+        shopName +
+        "<br>" +
+
+        "Location: " +
+        shopLocation +
+        "<br>" +
+
         "Commission: ₦" +
         commission.toLocaleString() +
         " per item.";
+
     }
 
 
@@ -290,27 +591,43 @@
     function addProduct() {
 
       const name =
-        document.getElementById("productName").value.trim();
+        document.getElementById("productName")
+        .value
+        .trim();
 
       const price =
-        Number(document.getElementById("productPrice").value);
+        Number(
+          document.getElementById("productPrice")
+          .value
+        );
 
       const minimum =
-        Number(document.getElementById("minimumQuantity").value);
+        Number(
+          document.getElementById("minimumQuantity")
+          .value
+        );
 
       if (
         !name ||
         price <= 0 ||
         minimum <= 0
       ) {
-        alert("Please fill in all product details correctly.");
+
+        alert(
+          "Please fill in all product details correctly."
+        );
+
         return;
       }
 
       const product = {
+
         name: name,
+
         price: price,
+
         minimumQuantity: minimum
+
       };
 
       localStorage.setItem(
@@ -324,12 +641,21 @@
       result.style.display = "block";
 
       result.innerHTML =
-        '<span class="success">Product added successfully!</span><br><br>' +
-        "Product: " + name + "<br>" +
+        '<span class="success">' +
+        'Product added successfully!' +
+        '</span><br><br>' +
+
+        "Product: " +
+        name +
+        "<br>" +
+
         "Price: ₦" +
-        price.toLocaleString() + "<br>" +
+        price.toLocaleString() +
+        "<br>" +
+
         "Minimum quantity: " +
         minimum;
+
     }
 
 
@@ -337,45 +663,66 @@
     function sendRequest() {
 
       const product =
-        document.getElementById("requestProduct").value.trim();
+        document.getElementById("requestProduct")
+        .value
+        .trim();
 
       const quantity =
         Number(
-          document.getElementById("requestQuantity").value
+          document.getElementById("requestQuantity")
+          .value
         );
 
       const note =
-        document.getElementById("requestNote").value.trim();
+        document.getElementById("requestNote")
+        .value
+        .trim();
 
-      if (!product || quantity <= 0) {
-        alert("Please enter the product name and quantity.");
+      if (
+        !product ||
+        quantity <= 0
+      ) {
+
+        alert(
+          "Please enter the product name and quantity."
+        );
+
         return;
       }
 
       const savedProduct =
         JSON.parse(
-          localStorage.getItem("quickMarketplaceProduct")
+          localStorage.getItem(
+            "quickMarketplaceProduct"
+          )
         );
 
       const shop =
         JSON.parse(
-          localStorage.getItem("quickMarketplaceShop")
+          localStorage.getItem(
+            "quickMarketplaceShop"
+          )
         );
 
       const result =
-        document.getElementById("requestResult");
+        document.getElementById(
+          "requestResult"
+        );
 
       result.style.display = "block";
 
 
-      // IF PRODUCT EXISTS
+      // PRODUCT EXISTS
       if (
         savedProduct &&
         savedProduct.name.toLowerCase() ===
         product.toLowerCase()
       ) {
 
-        if (quantity < savedProduct.minimumQuantity) {
+        if (
+          quantity <
+          savedProduct.minimumQuantity
+        ) {
 
           result.innerHTML =
             "Minimum quantity for this product is " +
@@ -386,24 +733,42 @@
         }
 
         const total =
-          savedProduct.price * quantity;
+          savedProduct.price *
+          quantity;
 
         const commission =
-          shop ? shop.commission * quantity : 0;
+          shop
+            ? shop.commission * quantity
+            : 0;
 
         const shopOwnerAmount =
           total - commission;
 
         result.innerHTML =
-          '<span class="success">Product found!</span><br><br>' +
-          "Product: " + savedProduct.name + "<br>" +
-          "Quantity: " + quantity + "<br>" +
+          '<span class="success">' +
+          'Product found!' +
+          '</span><br><br>' +
+
+          "Product: " +
+          savedProduct.name +
+          "<br>" +
+
+          "Quantity: " +
+          quantity +
+          "<br>" +
+
           "Price per item: ₦" +
-          savedProduct.price.toLocaleString() + "<br>" +
+          savedProduct.price.toLocaleString() +
+          "<br>" +
+
           "Total: ₦" +
-          total.toLocaleString() + "<br>" +
+          total.toLocaleString() +
+          "<br>" +
+
           "Commission: ₦" +
-          commission.toLocaleString() + "<br>" +
+          commission.toLocaleString() +
+          "<br>" +
+
           "Shop Owner Receives: ₦" +
           shopOwnerAmount.toLocaleString();
 
@@ -411,18 +776,27 @@
       }
 
 
-      // IF PRODUCT DOES NOT EXIST
+      // PRODUCT NOT FOUND
       const request = {
+
         product: product,
+
         quantity: quantity,
+
         note: note,
-        date: new Date().toLocaleString(),
+
+        date: new Date()
+          .toLocaleString(),
+
         status: "Pending"
+
       };
 
       let requests =
         JSON.parse(
-          localStorage.getItem("quickMarketplaceRequests")
+          localStorage.getItem(
+            "quickMarketplaceRequests"
+          )
         ) || [];
 
       requests.push(request);
@@ -433,31 +807,52 @@
       );
 
       result.innerHTML =
-        '<span class="success">Request sent successfully!</span><br><br>' +
-        "Product: " + product + "<br>" +
-        "Quantity: " + quantity + "<br>" +
-        "Note: " + (note || "None") + "<br><br>" +
+        '<span class="success">' +
+        'Request sent successfully!' +
+        '</span><br><br>' +
+
+        "Product: " +
+        product +
+        "<br>" +
+
+        "Quantity: " +
+        quantity +
+        "<br>" +
+
+        "Note: " +
+        (note || "None") +
+        "<br><br>" +
+
         "The shop owner will review your request.";
+
     }
 
 
-    // DELIVERY CALCULATOR
+    // DELIVERY
     function calculateDelivery() {
 
       const from =
-        document.getElementById("fromLocation").value.trim();
+        document.getElementById(
+          "fromLocation"
+        ).value.trim();
 
       const to =
-        document.getElementById("toLocation").value.trim();
+        document.getElementById(
+          "toLocation"
+        ).value.trim();
 
       const orderAmount =
         Number(
-          document.getElementById("orderAmount").value
+          document.getElementById(
+            "orderAmount"
+          ).value
         );
 
       const deliveryFee =
         Number(
-          document.getElementById("deliveryFee").value
+          document.getElementById(
+            "deliveryFee"
+          ).value
         );
 
       if (
@@ -466,16 +861,24 @@
         orderAmount <= 0 ||
         deliveryFee <= 0
       ) {
-        alert("Please fill in all delivery details correctly.");
+
+        alert(
+          "Please fill in all delivery details correctly."
+        );
+
         return;
       }
 
       let appPayment = 0;
-      let customerPayment = deliveryFee;
+
+      let customerPayment =
+        deliveryFee;
 
 
-      // APP PAYS 50% FOR ORDERS ₦50,000+
-      if (orderAmount >= ₦) {
+      // 50% SUPPORT FOR ₦50,000+
+      if (
+        orderAmount >= 50000
+      ) {
 
         appPayment =
           deliveryFee * 0.5;
@@ -486,22 +889,31 @@
 
 
       const result =
-        document.getElementById("deliveryResult");
+        document.getElementById(
+          "deliveryResult"
+        );
 
       result.style.display = "block";
 
       result.innerHTML =
+
         "<strong>Route:</strong> " +
-        from + " → " + to + "<br>" +
+        from +
+        " → " +
+        to +
+        "<br>" +
 
         "<strong>Delivery Fee:</strong> ₦" +
-        deliveryFee.toLocaleString() + "<br>" +
+        deliveryFee.toLocaleString() +
+        "<br>" +
 
         "<strong>App Pays:</strong> ₦" +
-        appPayment.toLocaleString() + "<br>" +
+        appPayment.toLocaleString() +
+        "<br>" +
 
         "<strong>Customer Pays:</strong> ₦" +
         customerPayment.toLocaleString();
+
     }
 
   </script>
