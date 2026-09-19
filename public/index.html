@@ -1953,7 +1953,44 @@ window.addEventListener(
   "load",
   loadAllData
 );
+async function adminLogin() {
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value;
+  const message = document.getElementById("adminMessage");
 
+  if (!email || !password) {
+    message.textContent = "Please enter email and password.";
+    return;
+  }
+
+  message.textContent = "Logging in...";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    message.textContent = "Login failed: " + error.message;
+    return;
+  }
+
+  const { data: admin, error: adminError } =
+    await supabaseClient
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+
+  if (adminError || !admin) {
+    message.textContent = "This account is not an admin.";
+    await supabaseClient.auth.signOut();
+    return;
+  }
+
+  message.textContent = "Admin login successful!";
+  }
 </script>
 <div id="adminSection" style="display:none; padding:20px;">
   <h2>Admin Panel</h2>
