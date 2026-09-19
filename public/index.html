@@ -40,7 +40,8 @@
       font-weight: bold;
     }
 
-    input, button {
+    input,
+    button {
       width: 100%;
       padding: 12px;
       margin-top: 8px;
@@ -82,7 +83,7 @@
 
   <div class="container">
 
-    <!-- SHOP CREATION -->
+    <!-- CREATE SHOP -->
     <div class="card">
       <h2>Create Your Shop</h2>
 
@@ -111,7 +112,7 @@
       <input
         type="number"
         id="commission"
-        placeholder="e.g. 50"
+        placeholder="e.g. "
         min="1"
       >
 
@@ -121,7 +122,7 @@
     </div>
 
 
-    <!-- PRODUCT -->
+    <!-- ADD PRODUCT -->
     <div class="card">
       <h2>Add Product</h2>
 
@@ -129,7 +130,7 @@
       <input
         type="text"
         id="productName"
-        placeholder="e.g. Cap"
+        placeholder="e.g. "
       >
 
       <label>Price (₦)</label>
@@ -144,7 +145,7 @@
       <input
         type="number"
         id="minimumQuantity"
-        placeholder="e.g. 10"
+        placeholder="e.g. "
         min="1"
       >
 
@@ -153,29 +154,39 @@
       <div id="productResult" class="result"></div>
     </div>
 
-<!-- CUSTOMER ORDER -->
-<div class="card">
-  <h2>Customer Order 🛒</h2>
 
-  <label>Product Name</label>
-  <input
-    type="text"
-    id="orderProductName"
-    placeholder="e.g. Cap"
-  >
+    <!-- CUSTOMER REQUEST -->
+    <div class="card">
+      <h2>Customer Request 🛒</h2>
 
-  <label>Quantity</label>
-  <input
-    type="number"
-    id="orderQuantity"
-    placeholder="e.g. 10"
-    min="1"
-  >
+      <label>What do you want?</label>
+      <input
+        type="text"
+        id="requestProduct"
+        placeholder="e.g. Rice, Shoes, Phone..."
+      >
 
-  <button onclick="placeOrder()">Place Order</button>
+      <label>Quantity</label>
+      <input
+        type="number"
+        id="requestQuantity"
+        placeholder="e.g. "
+        min="1"
+      >
 
-  <div id="orderResult" class="result"></div>
-</div>
+      <label>Note (Optional)</label>
+      <input
+        type="text"
+        id="requestNote"
+        placeholder="Any extra information..."
+      >
+
+      <button onclick="sendRequest()">Send Request</button>
+
+      <div id="requestResult" class="result"></div>
+    </div>
+
+
     <!-- DELIVERY -->
     <div class="card">
       <h2>Delivery</h2>
@@ -199,7 +210,6 @@
         type="number"
         id="orderAmount"
         placeholder="e.g. (₦)"
-    "
         min="1"
       >
 
@@ -212,12 +222,14 @@
       >
 
       <button onclick="calculateDelivery()">
-
         Calculate Delivery
       </button>
 
       <div id="deliveryResult" class="result"></div>
     </div>
+
+  </div>
+
 
   <script>
 
@@ -236,12 +248,15 @@
       const commission =
         Number(document.getElementById("commission").value);
 
-
-      if (!ownerName || !shopName || !shopLocation || commission <= 0) {
+      if (
+        !ownerName ||
+        !shopName ||
+        !shopLocation ||
+        commission <= 0
+      ) {
         alert("Please fill in all shop details correctly.");
         return;
       }
-
 
       const shop = {
         ownerName: ownerName,
@@ -250,13 +265,10 @@
         commission: commission
       };
 
-
-      // Save shop information
       localStorage.setItem(
         "quickMarketplaceShop",
         JSON.stringify(shop)
       );
-
 
       const result =
         document.getElementById("shopResult");
@@ -286,12 +298,14 @@
       const minimum =
         Number(document.getElementById("minimumQuantity").value);
 
-
-      if (!name || price <= 0 || minimum <= 0) {
+      if (
+        !name ||
+        price <= 0 ||
+        minimum <= 0
+      ) {
         alert("Please fill in all product details correctly.");
         return;
       }
-
 
       const product = {
         name: name,
@@ -299,12 +313,10 @@
         minimumQuantity: minimum
       };
 
-
       localStorage.setItem(
         "quickMarketplaceProduct",
         JSON.stringify(product)
       );
-
 
       const result =
         document.getElementById("productResult");
@@ -314,54 +326,121 @@
       result.innerHTML =
         '<span class="success">Product added successfully!</span><br><br>' +
         "Product: " + name + "<br>" +
-        "Price: ₦" + price.toLocaleString() + "<br>" +
-        "Minimum quantity: " + minimum;
+        "Price: ₦" +
+        price.toLocaleString() + "<br>" +
+        "Minimum quantity: " +
+        minimum;
     }
 
-// CUSTOMER ORDER
-function placeOrder() {
-  const productName = document.getElementById("orderProductName").value.trim();
-  const quantity = Number(document.getElementById("orderQuantity").value);
 
-  const savedProduct = localStorage.getItem("quickMarketplaceProduct");
-  const savedShop = localStorage.getItem("quickMarketplaceShop");
+    // CUSTOMER REQUEST
+    function sendRequest() {
 
-  if (!savedProduct || !savedShop) {
-    alert("Please create a shop and add a product first.");
-    return;
-  }
+      const product =
+        document.getElementById("requestProduct").value.trim();
 
-  const product = JSON.parse(savedProduct);
-  const shop = JSON.parse(savedShop);
+      const quantity =
+        Number(
+          document.getElementById("requestQuantity").value
+        );
 
-  if (!productName || quantity <= 0) {
-    alert("Please enter product name and quantity.");
-    return;
-  }
+      const note =
+        document.getElementById("requestNote").value.trim();
 
-  if (productName.toLowerCase() !== product.name.toLowerCase()) {
-    alert("This product was not found.");
-    return;
-  }
+      if (!product || quantity <= 0) {
+        alert("Please enter the product name and quantity.");
+        return;
+      }
 
-  if (quantity < product.minimumQuantity) {
-    alert("Minimum quantity is " + product.minimumQuantity + " for this product.");
-    return;
-  }
+      const savedProduct =
+        JSON.parse(
+          localStorage.getItem("quickMarketplaceProduct")
+        );
 
-  const total = product.price * quantity;
-  const commission = shop.commission * quantity;
+      const shop =
+        JSON.parse(
+          localStorage.getItem("quickMarketplaceShop")
+        );
 
-  const result = document.getElementById("orderResult");
-  result.style.display = "block";
+      const result =
+        document.getElementById("requestResult");
 
-  result.innerHTML =
-    '<span class="success">Order placed successfully!</span><br><br>' +
-    "<strong>Product:</strong> " + product.name + "<br>" +
-    "<strong>Quantity:</strong> " + quantity + "<br>" +
-    "<strong>Total:</strong> ₦" + total.toLocaleString() + "<br>" +
-    "<strong>Commission:</strong> ₦" + commission.toLocaleString();
-}
+      result.style.display = "block";
+
+
+      // IF PRODUCT EXISTS
+      if (
+        savedProduct &&
+        savedProduct.name.toLowerCase() ===
+        product.toLowerCase()
+      ) {
+
+        if (quantity < savedProduct.minimumQuantity) {
+
+          result.innerHTML =
+            "Minimum quantity for this product is " +
+            savedProduct.minimumQuantity +
+            ".";
+
+          return;
+        }
+
+        const total =
+          savedProduct.price * quantity;
+
+        const commission =
+          shop ? shop.commission * quantity : 0;
+
+        const shopOwnerAmount =
+          total - commission;
+
+        result.innerHTML =
+          '<span class="success">Product found!</span><br><br>' +
+          "Product: " + savedProduct.name + "<br>" +
+          "Quantity: " + quantity + "<br>" +
+          "Price per item: ₦" +
+          savedProduct.price.toLocaleString() + "<br>" +
+          "Total: ₦" +
+          total.toLocaleString() + "<br>" +
+          "Commission: ₦" +
+          commission.toLocaleString() + "<br>" +
+          "Shop Owner Receives: ₦" +
+          shopOwnerAmount.toLocaleString();
+
+        return;
+      }
+
+
+      // IF PRODUCT DOES NOT EXIST
+      const request = {
+        product: product,
+        quantity: quantity,
+        note: note,
+        date: new Date().toLocaleString(),
+        status: "Pending"
+      };
+
+      let requests =
+        JSON.parse(
+          localStorage.getItem("quickMarketplaceRequests")
+        ) || [];
+
+      requests.push(request);
+
+      localStorage.setItem(
+        "quickMarketplaceRequests",
+        JSON.stringify(requests)
+      );
+
+      result.innerHTML =
+        '<span class="success">Request sent successfully!</span><br><br>' +
+        "Product: " + product + "<br>" +
+        "Quantity: " + quantity + "<br>" +
+        "Note: " + (note || "None") + "<br><br>" +
+        "The shop owner will review your request.";
+    }
+
+
     // DELIVERY CALCULATOR
     function calculateDelivery() {
 
@@ -372,28 +451,37 @@ function placeOrder() {
         document.getElementById("toLocation").value.trim();
 
       const orderAmount =
-        Number(document.getElementById("orderAmount").value);
+        Number(
+          document.getElementById("orderAmount").value
+        );
 
       const deliveryFee =
-        Number(document.getElementById("deliveryFee").value);
+        Number(
+          document.getElementById("deliveryFee").value
+        );
 
-
-      if (!from || !to || orderAmount <= 0 || deliveryFee <= 0) {
+      if (
+        !from ||
+        !to ||
+        orderAmount <= 0 ||
+        deliveryFee <= 0
+      ) {
         alert("Please fill in all delivery details correctly.");
         return;
       }
-
 
       let appPayment = 0;
       let customerPayment = deliveryFee;
 
 
-      // App pays 50% when order reaches ₦50,000
-      if (orderAmount >= 50000) {
+      // APP PAYS 50% FOR ORDERS ₦50,000+
+      if (orderAmount >= ₦) {
 
-        appPayment = deliveryFee * 0.5;
+        appPayment =
+          deliveryFee * 0.5;
 
-        customerPayment = deliveryFee * 0.5;
+        customerPayment =
+          deliveryFee * 0.5;
       }
 
 
@@ -419,4 +507,4 @@ function placeOrder() {
   </script>
 
 </body>
-  </html>
+</html>
