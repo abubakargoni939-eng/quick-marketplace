@@ -219,52 +219,6 @@
       <div id="deliveryResult" class="result"></div>
     </div>
 
-  </div>
-
-// CUSTOMER ORDER
-function placeOrder() {
-  const productName = document.getElementById("orderProductName").value.trim();
-  const quantity = Number(document.getElementById("orderQuantity").value);
-
-  const savedProduct = localStorage.getItem("quickMarketplaceProduct");
-  const savedShop = localStorage.getItem("quickMarketplaceShop");
-
-  if (!savedProduct || !savedShop) {
-    alert("Please create a shop and add a product first.");
-    return;
-  }
-
-  const product = JSON.parse(savedProduct);
-  const shop = JSON.parse(savedShop);
-
-  if (!productName || quantity <= 0) {
-    alert("Please enter product name and quantity.");
-    return;
-  }
-
-  if (productName.toLowerCase() !== product.name.toLowerCase()) {
-    alert("This product was not found.");
-    return;
-  }
-
-  if (quantity < product.minimumQuantity) {
-    alert("Minimum quantity is " + product.minimumQuantity + " for this product.");
-    return;
-  }
-
-  const total = product.price * quantity;
-  const commission = shop.commission * quantity;
-
-  const result = document.getElementById("orderResult");
-  result.style.display = "block";
-
-  result.innerHTML =
-    '<span class="success">Order placed successfully!</span><br><br>' +
-    "<strong>Product:</strong> " + product.name + "<br>" +
-    "<strong>Quantity:</strong> " + quantity + "<br>" +
-    "<strong>Total:</strong> ₦" + total.toLocaleString() + "<br>" +
-    "<strong>Commission:</strong> ₦" + commission.toLocaleString();
-}
   <script>
 
     // CREATE SHOP
@@ -364,7 +318,50 @@ function placeOrder() {
         "Minimum quantity: " + minimum;
     }
 
+// CUSTOMER ORDER
+function placeOrder() {
+  const productName = document.getElementById("orderProductName").value.trim();
+  const quantity = Number(document.getElementById("orderQuantity").value);
 
+  const savedProduct = localStorage.getItem("quickMarketplaceProduct");
+  const savedShop = localStorage.getItem("quickMarketplaceShop");
+
+  if (!savedProduct || !savedShop) {
+    alert("Please create a shop and add a product first.");
+    return;
+  }
+
+  const product = JSON.parse(savedProduct);
+  const shop = JSON.parse(savedShop);
+
+  if (!productName || quantity <= 0) {
+    alert("Please enter product name and quantity.");
+    return;
+  }
+
+  if (productName.toLowerCase() !== product.name.toLowerCase()) {
+    alert("This product was not found.");
+    return;
+  }
+
+  if (quantity < product.minimumQuantity) {
+    alert("Minimum quantity is " + product.minimumQuantity + " for this product.");
+    return;
+  }
+
+  const total = product.price * quantity;
+  const commission = shop.commission * quantity;
+
+  const result = document.getElementById("orderResult");
+  result.style.display = "block";
+
+  result.innerHTML =
+    '<span class="success">Order placed successfully!</span><br><br>' +
+    "<strong>Product:</strong> " + product.name + "<br>" +
+    "<strong>Quantity:</strong> " + quantity + "<br>" +
+    "<strong>Total:</strong> ₦" + total.toLocaleString() + "<br>" +
+    "<strong>Commission:</strong> ₦" + commission.toLocaleString();
+}
     // DELIVERY CALCULATOR
     function calculateDelivery() {
 
