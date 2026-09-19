@@ -732,12 +732,16 @@ function addProduct(){
     name,
     price,
     minimum
-  };
+  let products = JSON.parse(
+  localStorage.getItem("quickMarketplaceProducts")
+) || [];
 
-  localStorage.setItem(
-    "quickMarketplaceProduct",
-    JSON.stringify(product)
-  );
+products.push(product);
+
+localStorage.setItem(
+  "quickMarketplaceProducts",
+  JSON.stringify(products)
+);
 
   message.innerHTML=
     `<div class="info">
