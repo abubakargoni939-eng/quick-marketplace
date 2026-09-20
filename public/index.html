@@ -1,961 +1,1749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Quick Marketplace</title>
-<title>Quick Marketplace</title>
+  <title>Quick Marketplace</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  const SUPABASE_URL = "PROJECT_URL_DINKA";
-  const SUPABASE_ANON_KEY = "ANON_PUBLIC_KEY_DINKA";
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,https://qdnksutiuqwdgeerpahb.supabase.co/rest/v1/
-    SUPABASE_ANON_KEYsb_publishable_HqtZfoMs_cvNAVg7ZBlL0w_HLL2D4uy
-  );
-</script>
-<style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f5f7;
+      color: #111;
+      padding-bottom: 80px;
+    }
 
-*{
-  box-sizing:border-box;
-}
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f3f4f6;
-  color:#111827;
-  padding-bottom:80px;
-}
+    button {
+      cursor: pointer;
+    }
 
-header{
-  background:#111827;
-  color:white;
-  padding:18px 15px;
-  position:sticky;
-  top:0;
-  z-index:100;
-}
+    .header {
+      background: #111;
+      color: white;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-.header-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-.logo{
-  font-size:22px;
-  font-weight:bold;
-}
+    .logo {
+      font-size: 21px;
+      font-weight: bold;
+    }
 
-.header-small{
-  font-size:12px;
-  opacity:.8;
-}
+    .logo span {
+      color: #22c55e;
+    }
 
-.container{
-  max-width:700px;
-  margin:auto;
-  padding:15px;
-}
+    .search-box {
+      margin-top: 12px;
+    }
 
-.section{
-  display:none;
-}
+    .search-box input {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+    }
 
-.section.active{
-  display:block;
-}
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 15px;
+    }
 
-.card{
-  background:white;
-  border-radius:15px;
-  padding:18px;
-  margin-bottom:15px;
-  box-shadow:0 3px 12px rgba(0,0,0,.06);
-}
+    .section {
+      display: none;
+    }
 
-h2{
-  margin-top:0;
-}
+    .section.active {
+      display: block;
+    }
 
-h3{
-  margin-bottom:8px;
-}
+    .hero {
+      background: linear-gradient(135deg, #111, #222);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+    }
 
-input,
-select,
-textarea,
-button{
-  width:100%;
-  padding:13px;
-  margin-top:8px;
-  margin-bottom:10px;
-  border-radius:10px;
-  border:1px solid #d1d5db;
-  font-size:15px;
-}
+    .hero h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
 
-textarea{
-  min-height:90px;
-  resize:vertical;
-}
+    .hero p {
+      color: #ddd;
+      line-height: 1.5;
+    }
 
-button{
-  background:#111827;
-  color:white;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
 
-button:hover{
-  opacity:.9;
-}
+    .card h2,
+    .card h3 {
+      margin-bottom: 12px;
+    }
 
-.green{
-  background:#16a34a;
-}
+    .quick-grid,
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
 
-.red{
-  background:#dc2626;
-}
+    .quick-item,
+    .category-item {
+      background: white;
+      border-radius: 13px;
+      padding: 16px 10px;
+      text-align: center;
+      border: 1px solid #eee;
+      font-weight: bold;
+    }
 
-.blue{
-  background:#2563eb;
-}
+    .quick-item {
+      cursor: pointer;
+    }
 
-.gold{
-  background:#ca8a04;
-}
+    .quick-item:hover {
+      background: #f0fdf4;
+    }
 
-.info{
-  background:#dcfce7;
-  color:#166534;
-  padding:12px;
-  border-radius:10px;
-  margin-top:8px;
-}
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
 
-.warning{
-  background:#fee2e2;
-  color:#991b1b;
-  padding:12px;
-  border-radius:10px;
-  margin-top:8px;
-}
+    .product {
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #eee;
+    }
 
-.product{
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:13px;
-  margin-top:10px;
-}
+    .product-image {
+      height: 130px;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 45px;
+    }
 
-.product-name{
-  font-weight:bold;
-  font-size:17px;
-}
+    .product-body {
+      padding: 12px;
+    }
 
-.price{
-  color:#16a34a;
-  font-weight:bold;
-  margin-top:5px;
-}
+    .product-name {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
 
-.small{
-  font-size:13px;
-  color:#6b7280;
-}
+    .price {
+      color: #16a34a;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
-.stat{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
+    .shop-name {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
 
-.stat-box{
-  background:#f9fafb;
-  border-radius:12px;
-  padding:15px;
-  text-align:center;
-}
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      margin-bottom: 10px;
+      outline: none;
+      background: white;
+    }
 
-.stat-number{
-  font-size:24px;
-  font-weight:bold;
-}
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
 
-.search-box{
-  margin-top:15px;
-}
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #22c55e;
+    }
 
-.request-card{
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:14px;
-  margin-top:10px;
-}
+    .btn {
+      border: none;
+      padding: 12px 15px;
+      border-radius: 9px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 5px;
+    }
 
-.status{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:12px;
-  margin-top:5px;
-  background:#fef3c7;
-}
+    .btn-primary {
+      background: #16a34a;
+      color: white;
+    }
 
-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  height:70px;
-  background:white;
-  border-top:1px solid #ddd;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  z-index:200;
-}
+    .btn-dark {
+      background: #111;
+      color: white;
+    }
 
-nav button{
-  background:none;
-  color:#374151;
-  margin:0;
-  padding:5px;
-  font-size:11px;
-}
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
 
-nav button.active{
-  color:#2563eb;
-  font-weight:bold;
-}
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+    }
 
-.hero{
-  background:#111827;
-  color:white;
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:15px;
-}
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111;
+    }
 
-.hero h2{
-  margin-bottom:8px;
-}
+    .btn-small {
+      width: auto;
+      padding: 8px 12px;
+      margin: 2px;
+    }
 
-.quick-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
+    .quick-delivery {
+      border: 2px solid #22c55e;
+      background: #f0fdf4;
+      border-radius: 13px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
 
-.quick-button{
-  background:white;
-  border:1px solid #e5e7eb;
-  color:#111827;
-  padding:18px 10px;
-  border-radius:13px;
-  text-align:center;
-}
+    .quick-delivery strong {
+      color: #15803d;
+    }
 
-.route-box{
-  background:#f9fafb;
-  padding:12px;
-  border-radius:10px;
-  margin-top:10px;
-}
+    .delivery-option {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
 
-hr{
-  border:none;
-  border-top:1px solid #eee;
-  margin:15px 0;
-}
+    .delivery-option.selected {
+      border: 2px solid #16a34a;
+      background: #f0fdf4;
+    }
 
-.empty{
-  text-align:center;
-  color:#6b7280;
-  padding:20px;
-}
+    .delivery-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
-</style>
+    .delivery-description {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .cart-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .qty-controls button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 7px;
+      background: #eee;
+    }
+
+    .total-box {
+      background: #111;
+      color: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 7px 0;
+    }
+
+    .total-final {
+      border-top: 1px solid #555;
+      padding-top: 10px;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #e5e7eb;
+      margin: 2px;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-orange {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .badge-red {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-info strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .setting-info small {
+      color: #777;
+    }
+
+    .switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: #16a34a;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 25px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      color: #777;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .nav-btn .icon {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+
+    .nav-btn.active {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .admin-header {
+      background: #111;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .route-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 700px) {
+      .quick-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-
-  <div class="header-top">
-
-    <div>
-      <div class="logo">Quick Marketplace</div>
-      <div class="header-small">
-        Buy • Sell • Request • Deliver
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo">Quick <span>Marketplace</span></div>
+      <div>
+        🛒 <span id="cartCount">0</span>
       </div>
     </div>
 
-    <div>
-      🇳🇬
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search products, shops..."
+        oninput="searchMarketplace()"
+      >
     </div>
+  </header>
 
-  </div>
 
-  <input
-    id="searchInput"
-    class="search-box"
-    placeholder="Search products..."
-    oninput="searchMarketplace()"
-  >
+  <main class="container">
 
-</header>
+    <!-- HOME -->
+    <section id="homeSection" class="section active">
 
+      <div class="hero">
+        <h1>Shop Quickly. Deliver Easily.</h1>
+        <p>
+          Buy products from local shops and get eligible local orders
+          through Quick Delivery in about 30 minutes.
+        </p>
+      </div>
 
-<div class="container">
+      <div class="quick-delivery">
+        ⚡ <strong>Quick Delivery — 30 Minutes</strong>
+        <br>
+        <small>
+          Available only for eligible local/same-area orders and when
+          a delivery person is available nearby.
+        </small>
+      </div>
 
+      <div class="card">
+        <h2>Quick Menu</h2>
 
-<!-- HOME -->
+        <div class="quick-grid">
 
-<section id="homeSection" class="section active">
+          <div class="quick-item" onclick="showSection('productsSection')">
+            🛍️<br>Products
+          </div>
 
-  <div class="hero">
+          <div class="quick-item" onclick="showSection('cartSection')">
+            🛒<br>Cart
+          </div>
 
-    <h2>Welcome to Quick Marketplace</h2>
+          <div class="quick-item" onclick="showSection('shopSection')">
+            🏪<br>My Shop
+          </div>
 
-    <p>
-      Buy products, request anything you need,
-      create your shop and arrange delivery.
-    </p>
+          <div class="quick-item" onclick="showSection('deliverySection')">
+            🚚<br>Delivery
+          </div>
 
-  </div>
+        </div>
+      </div>
 
+      <div class="card">
+        <h2>Categories</h2>
 
-  <div class="card">
+        <div class="category-grid">
 
-    <h3>Quick Menu</h3>
+          <div class="category-item" onclick="filterCategory('Food')">
+            🍲<br>Food
+          </div>
 
-    <div class="quick-grid">
+          <div class="category-item" onclick="filterCategory('Fashion')">
+            👕<br>Fashion
+          </div>
 
-      <button
-        class="quick-button"
-        onclick="showSection('shopSection')"
-      >
-        🏪<br>
-        Shop
-      </button>
+          <div class="category-item" onclick="filterCategory('Electronics')">
+            📱<br>Electronics
+          </div>
 
-      <button
-        class="quick-button"
-        onclick="showSection('requestSection')"
-      >
-        🛒<br>
-        Request
-      </button>
+          <div class="category-item" onclick="filterCategory('Groceries')">
+            🛒<br>Groceries
+          </div>
 
-      <button
-        class="quick-button"
-        onclick="showSection('dashboardSection')"
-      >
-        📊<br>
-        Dashboard
-      </button>
+          <div class="category-item" onclick="filterCategory('Beauty')">
+            💄<br>Beauty
+          </div>
 
-      <button
-        class="quick-button"
-        onclick="showSection('deliverySection')"
-      >
-        🚚<br>
-        Delivery
-      </button>
+          <div class="category-item" onclick="filterCategory('Other')">
+            📦<br>Other
+          </div>
 
-    </div>
+        </div>
+      </div>
 
-  </div>
+      <div class="card">
+        <h2>Available Products</h2>
+        <div id="homeProducts" class="product-grid"></div>
+      </div>
 
+    </section>
 
-  <div class="card">
 
-    <h3>Available Products</h3>
+    <!-- PRODUCTS -->
+    <section id="productsSection" class="section">
 
-    <div id="homeProducts"></div>
+      <div class="card">
+        <h2>🛍️ Products</h2>
 
-  </div>
+        <select id="categoryFilter" onchange="renderProducts()">
+          <option value="">All Categories</option>
+          <option value="Food">Food</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Beauty">Beauty</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <div id="productList" class="product-grid"></div>
+      </div>
 
-</section>
+    </section>
 
 
+    <!-- SHOP -->
+    <section id="shopSection" class="section">
 
-<!-- SHOP -->
+      <div class="card">
 
-<section id="shopSection" class="section">
+        <h2>🏪 Create Your Shop</h2>
 
-  <div class="card">
+        <input
+          id="shopName"
+          type="text"
+          placeholder="Shop name"
+        >
 
-    <h2>Create Your Shop</h2>
+        <input
+          id="shopOwner"
+          type="text"
+          placeholder="Shop owner name"
+        >
 
-    <input
-      id="ownerName"
-      placeholder="Shop Owner Name"
-    >
+        <input
+          id="shopCity"
+          type="text"
+          placeholder="Shop city"
+        >
 
-    <input
-      id="shopName"
-      placeholder="Shop Name"
-    >
+        <input
+          id="shopCommission"
+          type="number"
+          min="0"
+          placeholder="App commission per item (₦)"
+        >
 
-    <input
-      id="shopLocation"
-      placeholder="Shop Location"
-    >
+        <input
+          id="shopMinimumOrder"
+          type="number"
+          min="1"
+          value="1"
+          placeholder="Minimum quantity per product"
+        >
 
-    <label>
-      Commission per item
-    </label>
+        <button class="btn btn-primary" onclick="createShop()">
+          Create Shop
+        </button>
 
-    <input
-      id="commission"
-      type="number"
-      placeholder="Example: 50"
-    >
+        <div id="shopMessage"></div>
 
-    <button
-      class="green"
-      onclick="createShop()"
-    >
-      Create Shop
-    </button>
+      </div>
 
-    <div id="shopMessage"></div>
 
-  </div>
+      <div class="card">
 
+        <h2>➕ Add Product</h2>
 
+        <select id="productShop">
+          <option value="">Select your shop</option>
+        </select>
 
-  <div class="card">
+        <input
+          id="productName"
+          type="text"
+          placeholder="Product name"
+        >
 
-    <h2>Add Product</h2>
+        <input
+          id="productPrice"
+          type="number"
+          min="0"
+          placeholder="Price (₦)"
+        >
 
-    <input
-      id="productName"
-      placeholder="Product name"
-    >
+        <select id="productCategory">
+          <option value="Food">Food</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Beauty">Beauty</option>
+          <option value="Other">Other</option>
+        </select>
 
-    <input
-      id="productPrice"
-      type="number"
-      placeholder="Product price"
-    >
+        <input
+          id="productQuantity"
+          type="number"
+          min="1"
+          value="1"
+          placeholder="Available quantity"
+        >
 
-    <input
-      id="minimumQuantity"
-      type="number"
-      min="1"
-      placeholder="Minimum quantity"
-    >
+        <button class="btn btn-primary" onclick="addProduct()">
+          Add Product
+        </button>
 
-    <button
-      class="blue"
-      onclick="addProduct()"
-    >
-      Add Product
-    </button>
+        <div id="productMessage"></div>
 
-    <div id="productMessage"></div>
+      </div>
 
-  </div>
 
+      <div class="card">
 
+        <h2>My Products</h2>
 
-  <div class="card">
+        <div id="myProducts"></div>
 
-    <h3>My Products</h3>
+      </div>
 
-    <div id="shopProducts"></div>
+    </section>
 
-  </div>
 
-</section>
+    <!-- CART -->
+    <section id="cartSection" class="section">
 
+      <div class="card">
 
+        <h2>🛒 My Cart</h2>
 
-<!-- REQUEST -->
+        <div id="cartItems"></div>
 
-<section id="requestSection" class="section">
+        <div id="cartSummary"></div>
 
-  <div class="card">
+      </div>
 
-    <h2>Customer Request</h2>
+    </section>
 
-    <p class="small">
-      Type any product you want.
-      If it is not available, your request will be saved.
-    </p>
 
-    <input
-      id="customerName"
-      placeholder="Your name"
-    >
+    <!-- CHECKOUT -->
+    <section id="checkoutSection" class="section">
 
-    <input
-      id="customerPhone"
-      placeholder="Phone number"
-    >
+      <div class="card">
 
-    <input
-      id="requestProduct"
-      placeholder="What product do you want?"
-    >
+        <h2>💳 Checkout</h2>
 
-    <input
-      id="requestQuantity"
-      type="number"
-      min="1"
-      placeholder="Quantity"
-    >
+        <input
+          id="customerName"
+          type="text"
+          placeholder="Your name"
+        >
 
-    <textarea
-      id="requestNote"
-      placeholder="Additional note (optional)"
-    ></textarea>
+        <input
+          id="customerPhone"
+          type="tel"
+          placeholder="Phone number"
+        >
 
-    <button
-      class="green"
-      onclick="sendRequest()"
-    >
-      Send Request
-    </button>
+        <input
+          id="deliveryAddress"
+          type="text"
+          placeholder="Delivery address"
+        >
 
-    <div id="requestMessage"></div>
+        <input
+          id="deliveryCity"
+          type="text"
+          placeholder="Delivery city"
+        >
 
-  </div>
-
-
-
-  <div class="card">
-
-    <h3>My Requests</h3>
-
-    <div id="myRequests"></div>
-
-  </div>
-
-</section>
-
-
-
-<!-- DASHBOARD -->
-
-<section id="dashboardSection" class="section">
-
-  <div class="card">
-
-    <h2>Shop Owner Dashboard</h2>
-
-    <div id="dashboardShop"></div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h3>Statistics</h3>
-
-    <div class="stat">
-
-      <div class="stat-box">
+        <h3>Delivery Method</h3>
 
         <div
-          id="productCount"
-          class="stat-number"
+          id="quickDeliveryOption"
+          class="delivery-option"
+          onclick="selectDelivery('quick')"
         >
-          0
+          <div class="delivery-title">
+            ⚡ Quick Delivery — 30 Minutes
+          </div>
+
+          <div class="delivery-description">
+            For eligible local orders only.
+            Customer and shop should be within the supported
+            local delivery area.
+          </div>
         </div>
 
-        <div class="small">
-          Products
-        </div>
-
-      </div>
-
-
-      <div class="stat-box">
 
         <div
-          id="requestCount"
-          class="stat-number"
+          id="otherDeliveryOption"
+          class="delivery-option selected"
+          onclick="selectDelivery('other')"
         >
-          0
+          <div class="delivery-title">
+            🚚 Other Delivery
+          </div>
+
+          <div class="delivery-description">
+            For other locations and inter-state routes.
+          </div>
         </div>
 
-        <div class="small">
-          Requests
+
+        <div id="routeBox">
+
+          <h3>Delivery Route</h3>
+
+          <input
+            id="fromCity"
+            type="text"
+            placeholder="From city e.g. Kano"
+          >
+
+          <input
+            id="toCity"
+            type="text"
+            placeholder="To city e.g. Maiduguri"
+          >
+
+          <input
+            id="deliveryFee"
+            type="number"
+            min="0"
+            value="1500"
+            placeholder="Delivery fee (₦)"
+          >
+
+        </div>
+
+
+        <div id="checkoutSummary"></div>
+
+        <button class="btn btn-primary" onclick="placeOrder()">
+          Place Order
+        </button>
+
+        <div id="checkoutMessage"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- REQUESTS -->
+    <section id="requestsSection" class="section">
+
+      <div class="card">
+
+        <h2>📋 Customer Requests</h2>
+
+        <div id="requestList"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+    <section id="dashboardSection" class="section">
+
+      <div class="card">
+
+        <h2>📊 Dashboard</h2>
+
+        <div id="dashboardContent"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- DELIVERY -->
+    <section id="deliverySection" class="section">
+
+      <div class="card">
+
+        <h2>🚚 Delivery Calculator</h2>
+
+        <input
+          id="calcFrom"
+          type="text"
+          placeholder="From city"
+        >
+
+        <input
+          id="calcTo"
+          type="text"
+          placeholder="To city"
+        >
+
+        <input
+          id="calcAmount"
+          type="number"
+          placeholder="Order amount (₦)"
+        >
+
+        <input
+          id="calcTransport"
+          type="number"
+          placeholder="Transport cost (₦)"
+        >
+
+        <button
+          class="btn btn-primary"
+          onclick="calculateDelivery()"
+        >
+          Calculate
+        </button>
+
+        <div id="deliveryResult"></div>
+
+      </div>
+
+      <div class="card">
+
+        <h2>⚡ Quick Delivery</h2>
+
+        <p>
+          Eligible local orders can use
+          <strong>30-minute Quick Delivery</strong>.
+        </p>
+
+        <br>
+
+        <p>
+          Inter-state routes such as
+          Kano → Maiduguri or Lagos → Maiduguri
+          use the configured route delivery time.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section id="profileSection" class="section">
+
+      <div class="card">
+
+        <h2>👤 Profile</h2>
+
+        <input
+          id="profileName"
+          type="text"
+          placeholder="Your name"
+        >
+
+        <input
+          id="profilePhone"
+          type="tel"
+          placeholder="Phone number"
+        >
+
+        <input
+          id="profileCity"
+          type="text"
+          placeholder="City"
+        >
+
+        <button
+          class="btn btn-primary"
+          onclick="saveProfile()"
+        >
+          Save Profile
+        </button>
+
+        <div id="profileMessage"></div>
+
+      </div>
+
+
+      <div class="card">
+
+        <button
+          class="btn btn-dark"
+          onclick="showSection('adminSection')"
+        >
+          🔐 Admin Login
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ADMIN LOGIN -->
+    <section id="adminSection" class="section">
+
+      <div class="admin-header">
+        <h2>🔐 Admin Panel</h2>
+        <p>Only authorized admin accounts can change app settings.</p>
+      </div>
+
+      <div id="adminLoginBox" class="card">
+
+        <h3>Admin Login</h3>
+
+        <input
+          id="adminEmail"
+          type="email"
+          placeholder="Admin email"
+        >
+
+        <input
+          id="adminPassword"
+          type="password"
+          placeholder="Password"
+        >
+
+        <button class="btn btn-dark" onclick="adminLogin()">
+          Login
+        </button>
+
+        <div id="adminMessage"></div>
+
+      </div>
+
+
+      <!-- ADMIN SETTINGS -->
+      <div id="adminSettings" class="admin-only">
+
+        <div class="card">
+
+          <h2>⚙️ App Settings</h2>
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Shop Creation</strong>
+              <small>Allow users to create shops.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setShopCreation" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Product Addition</strong>
+              <small>Allow shop owners to add products.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setProductAddition" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Customer Requests</strong>
+              <small>Allow customers to send product requests.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setCustomerRequests" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Delivery</strong>
+              <small>Enable delivery services.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setDelivery" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Commission</strong>
+              <small>Enable shop commission.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setCommission" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Minimum Order</strong>
+              <small>Enable shop minimum quantity rules.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setMinimumOrder" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Bulk Delivery Support</strong>
+              <small>Enable transport support for large orders.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setBulkDelivery" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Shop Owner Registration</strong>
+              <small>Allow new shop owners.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setShopOwnerRegistration" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>Customer Search</strong>
+              <small>Allow customers to search products.</small>
+            </div>
+
+            <label class="switch">
+              <input id="setCustomerSearch" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <!-- QUICK DELIVERY -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+              <strong>⚡ Quick Delivery</strong>
+
+              <small>
+                Enable local 30-minute delivery.
+              </small>
+
+            </div>
+
+            <label class="switch">
+              <input id="setQuickDelivery" type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div style="margin-top:15px">
+
+            <label>
+              <strong>Quick Delivery Time (minutes)</strong>
+            </label>
+
+            <input
+              id="setQuickDeliveryMinutes"
+              type="number"
+              min="1"
+              value="30"
+            >
+
+          </div>
+
+
+          <div style="margin-top:15px">
+
+            <label>
+              <strong>Bulk Order Minimum (₦)</strong>
+            </label>
+
+            <input
+              id="setBulkMinimum"
+              type="number"
+              min="0"
+              value="50000"
+            >
+
+          </div>
+
+
+          <div style="margin-top:15px">
+
+            <label>
+              <strong>App Delivery Support (%)</strong>
+            </label>
+
+            <input
+              id="setDeliverySupport"
+              type="number"
+              min="0"
+              max="100"
+              value="50"
+            >
+
+          </div>
+
+
+          <button
+            class="btn btn-primary"
+            onclick="saveAdminSettings()"
+          >
+            Save Settings
+          </button>
+
+          <div id="settingsMessage"></div>
+
+        </div>
+
+
+        <!-- ROUTES -->
+        <div class="card">
+
+          <h2>🛣️ Delivery Routes</h2>
+
+          <input
+            id="routeFrom"
+            type="text"
+            placeholder="From city"
+          >
+
+          <input
+            id="routeTo"
+            type="text"
+            placeholder="To city"
+          >
+
+          <input
+            id="routeTime"
+            type="text"
+            placeholder="Delivery time e.g. 1-2 days"
+          >
+
+          <button
+            class="btn btn-primary"
+            onclick="addRoute()"
+          >
+            Add Route
+          </button>
+
+          <div id="routeList"></div>
+
+        </div>
+
+
+        <div class="card">
+
+          <button
+            class="btn btn-danger"
+            onclick="adminLogout()"
+          >
+            Logout Admin
+          </button>
+
         </div>
 
       </div>
 
-    </div>
+    </section>
 
-  </div>
-
-
-  <div class="card">
-
-    <h3>Customer Requests</h3>
-
-    <div id="dashboardRequests"></div>
-
-  </div>
-
-</section>
+  </main>
 
 
-
-<!-- DELIVERY -->
-
-<section id="deliverySection" class="section">
-
-  <div class="card">
-
-    <h2>Delivery</h2>
-
-    <p class="small">
-      Delivery can be arranged anywhere in Nigeria.
-    </p>
-
-
-    <input
-      id="deliveryFrom"
-      placeholder="From e.g. Kano"
-    >
-
-    <input
-      id="deliveryTo"
-      placeholder="To e.g. Maiduguri"
-    >
-
-    <input
-      id="orderAmount"
-      type="number"
-      placeholder="Order amount"
-    >
-
-    <input
-      id="transportCost"
-      type="number"
-      placeholder="Transport cost"
-    >
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
 
     <button
-      class="blue"
-      onclick="calculateDelivery()"
+      class="nav-btn active"
+      onclick="showSection('homeSection', this)"
     >
-      Calculate Delivery
+      <span class="icon">🏠</span>
+      Home
     </button>
 
-    <div id="deliveryResult"></div>
+    <button
+      class="nav-btn"
+      onclick="showSection('productsSection', this)"
+    >
+      <span class="icon">🛍️</span>
+      Shop
+    </button>
 
-  </div>
+    <button
+      class="nav-btn"
+      onclick="showSection('cartSection', this)"
+    >
+      <span class="icon">🛒</span>
+      Cart
+    </button>
 
+    <button
+      class="nav-btn"
+      onclick="showSection('requestsSection', this)"
+    >
+      <span class="icon">📋</span>
+      Requests
+    </button>
 
-  <div class="card">
+    <button
+      class="nav-btn"
+      onclick="showSection('profileSection', this)"
+    >
+      <span class="icon">👤</span>
+      Profile
+    </button>
 
-    <h3>Delivery Information</h3>
-
-    <div class="route-box">
-      📍 Short distance: around 1–2 days
-    </div>
-
-    <div class="route-box">
-      🚚 Long distance: around 5–7 days
-    </div>
-
-    <div class="route-box">
-      🇳🇬 Available for routes across Nigeria
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- PROFILE -->
-
-<section id="profileSection" class="section">
-
-  <div class="card">
-
-    <h2>Profile</h2>
-
-    <div id="profileInfo"></div>
-
-  </div>
-
-</section>
-
-
-</div>
-
-
-
-<!-- BOTTOM NAV -->
-
-<nav>
-
-  <button
-    id="navHome"
-    class="active"
-    onclick="showSection('homeSection')"
-  >
-    🏠<br>
-    Home
-  </button>
-
-
-  <button
-    id="navShop"
-    onclick="showSection('shopSection')"
-  >
-    🏪<br>
-    Shop
-  </button>
-
-
-  <button
-    id="navRequest"
-    onclick="showSection('requestSection')"
-  >
-    🛒<br>
-    Request
-  </button>
-
-
-  <button
-    id="navDashboard"
-    onclick="showSection('dashboardSection')"
-  >
-    📊<br>
-    Dashboard
-  </button>
-
-
-  <button
-    id="navDelivery"
-    onclick="showSection('deliverySection')"
-  >
-    🚚<br>
-    Delivery
-  </button>
-
-</nav>
-
+  </nav>
 
 
 <script>
 
+/* =========================================================
+   SUPABASE CONNECTION
+========================================================= */
 
-/* =========================
-   NAVIGATION
-========================= */
+const SUPABASE_URL =
+  "https://qdnksutiuqwdgeerpahb.supabase.co";
 
-function showSection(sectionId){
+const SUPABASE_ANON_KEY =sb_publishable_HqtZfoMs_cvNAVg7ZBlL0w_HLL2D4uy
+  "YOUR_PUBLISHABLE_KEY_HERE";
 
-  const sections =
-    document.querySelectorAll(".section");
+let supabaseClient = null;
 
-  sections.forEach(section=>{
-    section.classList.remove("active");
-  });
+try {
 
+  if (
+    SUPABASE_URL &&
+    SUPABASE_ANON_KEY &&
+    SUPABASE_ANON_KEY !== "YOUR_PUBLISHABLE_KEY_HERE"
+  ) {
 
-  const selected =
-    document.getElementById(sectionId);
+    supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
 
-  if(selected){
-    selected.classList.add("active");
   }
 
+} catch (error) {
 
-  const navButtons =
-    document.querySelectorAll("nav button");
+  console.error(
+    "Supabase initialization error:",
+    error
+  );
 
-  navButtons.forEach(button=>{
-    button.classList.remove("active");
-  });
-
-
-  const map = {
-
-    homeSection:"navHome",
-    shopSection:"navShop",
-    requestSection:"navRequest",
-    dashboardSection:"navDashboard",
-    deliverySection:"navDelivery"
-
-  };
+}
 
 
-  if(map[sectionId]){
+/* =========================================================
+   DEFAULT SETTINGS
+========================================================= */
 
-    const nav =
-      document.getElementById(map[sectionId]);
+let settings = {
 
-    if(nav){
-      nav.classList.add("active");
-    }
+  shop_creation: true,
+
+  product_addition: true,
+
+  customer_requests: true,
+
+  delivery: true,
+
+  commission: true,
+
+  minimum_order: true,
+
+  bulk_delivery_support: true,
+
+  bulk_order_minimum: 50000,
+
+  app_delivery_support_percent: 50,
+
+  shop_owner_registration: true,
+
+  customer_search: true,
+
+  quick_delivery: true,
+
+  quick_delivery_minutes: 30,
+
+  quick_delivery_local_only: true,
+
+  other_delivery: true
+
+};
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function getData(key, fallback = []) {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(key)
+    ) || fallback;
+
+  } catch {
+
+    return fallback;
 
   }
 
 }
 
 
+function saveData(key, data) {
 
-/* =========================
-   CREATE SHOP
-========================= */
+  localStorage.setItem(
+    key,
+    JSON.stringify(data)
+  );
 
-function createShop(){
+}
 
-  const ownerName =
-    document.getElementById("ownerName").value.trim();
 
-  const shopName =
-    document.getElementById("shopName").value.trim();
+let shops = getData("qm_shops");
 
-  const shopLocation =
-    document.getElementById("shopLocation").value.trim();
+let products = getData("qm_products");
+
+let requests = getData("qm_requests");
+
+let orders = getData("qm_orders");
+
+let cart = getData("qm_cart");
+
+let routes = getData("qm_routes");
+
+let profile =
+  getData("qm_profile", {});
+
+
+let selectedDelivery = "other";
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showSection(
+  sectionId,
+  clickedButton = null
+) {
+
+  document
+    .querySelectorAll(".section")
+    .forEach(section => {
+
+      section.classList.remove("active");
+
+    });
+
+  const section =
+    document.getElementById(sectionId);
+
+  if (section) {
+
+    section.classList.add("active");
+
+  }
+
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+      button.classList.remove("active");
+
+    });
+
+
+  if (clickedButton) {
+
+    clickedButton.classList.add("active");
+
+  }
+
+  else {
+
+    const matchingButton =
+      document.querySelector(
+        `.nav-btn[onclick*="${sectionId}"]`
+      );
+
+    if (matchingButton) {
+
+      matchingButton.classList.add("active");
+
+    }
+
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+async function loadSettings() {
+
+  if (!supabaseClient) {
+
+    return;
+
+  }
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+
+    if (error) {
+
+      console.log(
+        "Settings load:",
+        error.message
+      );
+
+      return;
+
+    }
+
+    if (data) {
+
+      settings = {
+        ...settings,
+        ...data
+      };
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Settings error:",
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SHOPS
+========================================================= */
+
+function createShop() {
+
+  if (!settings.shop_creation) {
+
+    showMessage(
+      "shopMessage",
+      "Shop creation is currently disabled by admin.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    document
+      .getElementById("shopName")
+      .value
+      .trim();
+
+  const owner =
+    document
+      .getElementById("shopOwner")
+      .value
+      .trim();
+
+  const city =
+    document
+      .getElementById("shopCity")
+      .value
+      .trim();
 
   const commission =
     Number(
-      document.getElementById("commission").value
+      document
+        .getElementById("shopCommission")
+        .value
+    );
+
+  const minimumOrder =
+    Number(
+      document
+        .getElementById("shopMinimumOrder")
+        .value
     );
 
 
-  const message =
-    document.getElementById("shopMessage");
+  if (!name || !owner || !city) {
 
-
-  if(
-    !ownerName ||
-    !shopName ||
-    !shopLocation ||
-    commission <= 0
-  ){
-
-    message.innerHTML = `
-      <div class="warning">
-        Please fill all shop information,
-        including commission per item.
-      </div>
-    `;
+    showMessage(
+      "shopMessage",
+      "Please fill all shop details.",
+      "error"
+    );
 
     return;
+
+  }
+
+
+  if (
+    settings.commission &&
+    (!commission || commission < 0)
+  ) {
+
+    showMessage(
+      "shopMessage",
+      "Commission per item is required.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    settings.minimum_order &&
+    (!minimumOrder || minimumOrder < 1)
+  ) {
+
+    showMessage(
+      "shopMessage",
+      "Minimum quantity must be at least 1.",
+      "error"
+    );
+
+    return;
+
   }
 
 
   const shop = {
 
-    ownerName,
-    shopName,
-    shopLocation,
-    commission,
-    createdAt:new Date().toISOString()
-
-  };
-
-
-  localStorage.setItem(
-    "quickMarketplaceShop",
-    JSON.stringify(shop)
-  );
-
-
-  message.innerHTML = `
-    <div class="info">
-      ✅ Shop created successfully!
-    </div>
-  `;
-
-
-  loadAllData();
-
-}
-
-
-
-/* =========================
-   ADD PRODUCT
-========================= */
-
-function addProduct(){
-
-  const name =
-    document.getElementById("productName")
-    .value.trim();
-
-
-  const price =
-    Number(
-      document.getElementById("productPrice").value
-    );
-
-
-  const minimum =
-    Number(
-      document.getElementById("minimumQuantity").value
-    );
-
-
-  const message =
-    document.getElementById("productMessage");
-
-
-  const shop =
-    JSON.parse(
-      localStorage.getItem("quickMarketplaceShop")
-    );
-
-
-  if(!shop){
-
-    message.innerHTML = `
-      <div class="warning">
-        Please create your shop first.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  if(
-    !name ||
-    price <= 0 ||
-    minimum <= 0
-  ){
-
-    message.innerHTML = `
-      <div class="warning">
-        Please enter product name,
-        price and minimum quantity.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  const product = {
-
-    id:Date.now(),
+    id: Date.now(),
 
     name,
-    price,
-    minimum,
+
+    owner,
+
+    city,
+
+    commission:
+      settings.commission
+        ? commission
+        : 0,
+
+    minimumOrder:
+      settings.minimum_order
+        ? minimumOrder
+        : 1,
 
     createdAt:
       new Date().toISOString()
@@ -963,691 +1751,315 @@ function addProduct(){
   };
 
 
-  let products =
-    JSON.parse(
-      localStorage.getItem(
-        "quickMarketplaceProducts"
-      )
-    ) || [];
+  shops.push(shop);
 
-
-  products.push(product);
-
-
-  localStorage.setItem(
-    "quickMarketplaceProducts",
-    JSON.stringify(products)
+  saveData(
+    "qm_shops",
+    shops
   );
 
 
-  message.innerHTML = `
-    <div class="info">
-      ✅ Product added successfully!
-    </div>
-  `;
+  document
+    .getElementById("shopName")
+    .value = "";
+
+  document
+    .getElementById("shopOwner")
+    .value = "";
+
+  document
+    .getElementById("shopCity")
+    .value = "";
+
+  document
+    .getElementById("shopCommission")
+    .value = "";
+
+  document
+    .getElementById("shopMinimumOrder")
+    .value = "1";
 
 
-  document.getElementById("productName").value="";
-  document.getElementById("productPrice").value="";
-  document.getElementById("minimumQuantity").value="";
+  showMessage(
+    "shopMessage",
+    "Shop created successfully.",
+    "success"
+  );
 
 
-  loadAllData();
+  loadShopOptions();
 
 }
 
 
+/* =========================================================
+   SHOP OPTIONS
+========================================================= */
 
-/* =========================
-   GET PRODUCTS
-========================= */
+function loadShopOptions() {
 
-function getProducts(){
-
-  return JSON.parse(
-    localStorage.getItem(
-      "quickMarketplaceProducts"
-    )
-  ) || [];
-
-}
-
-
-
-/* =========================
-   SEND CUSTOMER REQUEST
-========================= */
-
-function sendRequest(){
-
-  const customerName =
-    document.getElementById("customerName")
-    .value.trim();
-
-
-  const customerPhone =
-    document.getElementById("customerPhone")
-    .value.trim();
-
-
-  const productName =
-    document.getElementById("requestProduct")
-    .value.trim();
-
-
-  const quantity =
-    Number(
-      document.getElementById("requestQuantity").value
+  const select =
+    document.getElementById(
+      "productShop"
     );
 
+  if (!select) return;
 
-  const note =
-    document.getElementById("requestNote")
-    .value.trim();
-
-
-  const message =
-    document.getElementById("requestMessage");
+  select.innerHTML =
+    `<option value="">Select your shop</option>`;
 
 
-  if(
-    !customerName ||
-    !customerPhone ||
-    !productName ||
-    quantity <= 0
-  ){
+  shops.forEach(shop => {
 
-    message.innerHTML = `
-      <div class="warning">
-        Please fill your name, phone,
-        product and quantity.
-      </div>
+    select.innerHTML += `
+      <option value="${shop.id}">
+        ${escapeHTML(shop.name)}
+      </option>
     `;
 
+  });
+
+}
+
+
+/* =========================================================
+   ADD PRODUCT
+========================================================= */
+
+function addProduct() {
+
+  if (!settings.product_addition) {
+
+    showMessage(
+      "productMessage",
+      "Product addition is currently disabled by admin.",
+      "error"
+    );
+
     return;
+
   }
 
 
-  const products =
-    getProducts();
+  const shopId =
+    Number(
+      document
+        .getElementById("productShop")
+        .value
+    );
 
+  const name =
+    document
+      .getElementById("productName")
+      .value
+      .trim();
 
-  const product =
-    products.find(
-      item =>
-        item.name.toLowerCase() ===
-        productName.toLowerCase()
+  const price =
+    Number(
+      document
+        .getElementById("productPrice")
+        .value
+    );
+
+  const category =
+    document
+      .getElementById("productCategory")
+      .value;
+
+  const quantity =
+    Number(
+      document
+        .getElementById("productQuantity")
+        .value
     );
 
 
-  if(product && quantity < product.minimum){
+  if (!shopId) {
 
-    message.innerHTML = `
-      <div class="warning">
-        Minimum quantity for this product is
-        ${product.minimum}.
-      </div>
-    `;
+    showMessage(
+      "productMessage",
+      "Please select a shop.",
+      "error"
+    );
 
     return;
+
+  }
+
+
+  if (!name || price <= 0 || quantity <= 0) {
+
+    showMessage(
+      "productMessage",
+      "Please enter valid product details.",
+      "error"
+    );
+
+    return;
+
   }
 
 
   const shop =
-    JSON.parse(
-      localStorage.getItem(
-        "quickMarketplaceShop"
-      )
+    shops.find(
+      s => s.id === shopId
     );
 
 
-  let requests =
-    JSON.parse(
-      localStorage.getItem(
-        "quickMarketplaceRequests"
-      )
-    ) || [];
+  if (!shop) {
+
+    showMessage(
+      "productMessage",
+      "Shop not found.",
+      "error"
+    );
+
+    return;
+
+  }
 
 
-  const request = {
+  const product = {
 
-    id:Date.now(),
+    id: Date.now(),
 
-    customerName,
-    customerPhone,
+    shopId,
 
-    productName,
+    shopName:
+      shop.name,
+
+    shopCity:
+      shop.city,
+
+    name,
+
+    price,
+
+    category,
 
     quantity,
 
-    note,
+    commission:
+      shop.commission,
 
-    status:"Pending",
+    minimumOrder:
+      shop.minimumOrder,
 
     createdAt:
-      new Date().toISOString(),
-
-    shopName:
-      shop ? shop.shopName : "",
-
-    shopOwner:
-      shop ? shop.ownerName : ""
+      new Date().toISOString()
 
   };
 
 
-  if(product){
+  products.push(product);
 
-    request.productFound = true;
-
-    request.price =
-      product.price;
-
-    request.total =
-      product.price * quantity;
-
-    request.commission =
-      shop
-      ? shop.commission * quantity
-      : 0;
-
-    request.shopAmount =
-      request.total -
-      request.commission;
-
-  }else{
-
-    request.productFound = false;
-
-  }
-
-
-  requests.push(request);
-
-
-  localStorage.setItem(
-    "quickMarketplaceRequests",
-    JSON.stringify(requests)
+  saveData(
+    "qm_products",
+    products
   );
 
 
-  message.innerHTML = `
-    <div class="info">
-      ✅ Request sent successfully!
-    </div>
-  `;
-
-
-  document.getElementById("requestProduct").value="";
-  document.getElementById("requestQuantity").value="";
-  document.getElementById("requestNote").value="";
-
-
-  loadAllData();
-
-}
-
-
-
-/* =========================
-   LOAD REQUESTS
-========================= */
-
-function getRequests(){
-
-  return JSON.parse(
-    localStorage.getItem(
-      "quickMarketplaceRequests"
-    )
-  ) || [];
-
-}
-
-
-
-/* =========================
-   DASHBOARD
-========================= */
-
-function loadDashboard(){
-
-  const shop =
-    JSON.parse(
-      localStorage.getItem(
-        "quickMarketplaceShop"
-      )
-    );
-
-
-  const products =
-    getProducts();
-
-
-  const requests =
-    getRequests();
-
-
-  const shopBox =
-    document.getElementById(
-      "dashboardShop"
-    );
-
-
-  if(!shop){
-
-    shopBox.innerHTML = `
-      <div class="empty">
-        No shop created yet.
-      </div>
-    `;
-
-  }else{
-
-    shopBox.innerHTML = `
-
-      <div class="product">
-
-        <div class="product-name">
-          ${escapeHTML(shop.shopName)}
-        </div>
-
-        <div>
-          Owner:
-          ${escapeHTML(shop.ownerName)}
-        </div>
-
-        <div>
-          Location:
-          ${escapeHTML(shop.shopLocation)}
-        </div>
-
-        <div>
-          Commission:
-          ₦${shop.commission}
-          per item
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  document.getElementById(
-    "productCount"
-  ).textContent = products.length;
-
-
-  document.getElementById(
-    "requestCount"
-  ).textContent = requests.length;
-
-
-  const requestBox =
-    document.getElementById(
-      "dashboardRequests"
-    );
-
-
-  if(requests.length === 0){
-
-    requestBox.innerHTML = `
-      <div class="empty">
-        No customer requests yet.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  requestBox.innerHTML =
-    requests.map(
-      (request,index)=>`
-
-      <div class="request-card">
-
-        <strong>
-          ${escapeHTML(
-            request.productName
-          )}
-        </strong>
-
-        <br>
-
-        Customer:
-        ${escapeHTML(
-          request.customerName
-        )}
-
-        <br>
-
-        Phone:
-        ${escapeHTML(
-          request.customerPhone
-        )}
-
-        <br>
-
-        Quantity:
-        ${request.quantity}
-
-        ${
-          request.total
-          ?
-          `<div>
-            Total:
-            ₦${request.total}
-          </div>`
-          :
-          `<div class="small">
-            Product not currently available.
-          </div>`
-        }
-
-        <div>
-          <span class="status">
-            ${request.status}
-          </span>
-        </div>
-
-
-        ${
-          request.status === "Pending"
-
-          ?
-
-          `
-
-          <button
-            class="green"
-            onclick="acceptRequest(${index})"
-          >
-            Accept
-          </button>
-
-          <button
-            class="red"
-            onclick="rejectRequest(${index})"
-          >
-            Reject
-          </button>
-
-          `
-
-          :
-
-          ""
-
-        }
-
-      </div>
-
-    `
-    ).join("");
-
-}
-
-
-
-/* =========================
-   ACCEPT REQUEST
-========================= */
-
-function acceptRequest(index){
-
-  let requests =
-    getRequests();
-
-
-  if(!requests[index]){
-    return;
-  }
-
-
-  requests[index].status =
-    "Accepted";
-
-
-  requests[index].acceptedAt =
-    new Date().toISOString();
-
-
-  localStorage.setItem(
-    "quickMarketplaceRequests",
-    JSON.stringify(requests)
+  document
+    .getElementById("productName")
+    .value = "";
+
+  document
+    .getElementById("productPrice")
+    .value = "";
+
+  document
+    .getElementById("productQuantity")
+    .value = "1";
+
+
+  showMessage(
+    "productMessage",
+    "Product added successfully.",
+    "success"
   );
 
 
-  loadAllData();
+  renderProducts();
+
+  renderHomeProducts();
+
+  loadMyProducts();
 
 }
 
 
-
-/* =========================
-   REJECT REQUEST
-========================= */
-
-function rejectRequest(index){
-
-  let requests =
-    getRequests();
-
-
-  if(!requests[index]){
-    return;
-  }
-
-
-  requests[index].status =
-    "Rejected";
-
-
-  requests[index].rejectedAt =
-    new Date().toISOString();
-
-
-  localStorage.setItem(
-    "quickMarketplaceRequests",
-    JSON.stringify(requests)
-  );
-
-
-  loadAllData();
-
-}
-
-
-
-/* =========================
-   DELIVERY
-========================= */
-
-function calculateDelivery(){
-
-  const from =
-    document.getElementById(
-      "deliveryFrom"
-    ).value.trim();
-
-
-  const to =
-    document.getElementById(
-      "deliveryTo"
-    ).value.trim();
-
-
-  const orderAmount =
-    Number(
-      document.getElementById(
-        "orderAmount"
-      ).value
-    );
-
-
-  const transportCost =
-    Number(
-      document.getElementById(
-        "transportCost"
-      ).value
-    );
-
-
-  const result =
-    document.getElementById(
-      "deliveryResult"
-    );
-
-
-  if(
-    !from ||
-    !to ||
-    orderAmount <= 0 ||
-    transportCost <= 0
-  ){
-
-    result.innerHTML = `
-      <div class="warning">
-        Please enter route, order amount
-        and transport cost.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  let appPays = 0;
-  let customerPays =
-    transportCost;
-
-
-  if(orderAmount >= 50000){
-
-    appPays =
-      transportCost * 0.5;
-
-    customerPays =
-      transportCost * 0.5;
-
-  }
-
-
-  result.innerHTML = `
-
-    <div class="info">
-
-      <strong>
-        Delivery calculated
-      </strong>
-
-      <hr>
-
-      Route:
-      ${escapeHTML(from)}
-      →
-      ${escapeHTML(to)}
-
-      <br><br>
-
-      Order Amount:
-      ₦${orderAmount.toLocaleString()}
-
-      <br><br>
-
-      Transport Cost:
-      ₦${transportCost.toLocaleString()}
-
-      <br><br>
-
-      App pays:
-      ₦${appPays.toLocaleString()}
-
-      <br>
-
-      Customer pays:
-      ₦${customerPays.toLocaleString()}
-
-    </div>
-
-  `;
-
-}
-
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchMarketplace(){
-
-  const search =
-    document.getElementById(
-      "searchInput"
-    ).value
-    .trim()
-    .toLowerCase();
-
-
-  const products =
-    getProducts();
-
-
-  const home =
-    document.getElementById(
-      "homeProducts"
-    );
-
-
-  if(!search){
-
-    renderProducts(
-      products,
-      home
-    );
-
-    return;
-
-  }
-
-
-  const filtered =
-    products.filter(
-      product =>
-        product.name
-        .toLowerCase()
-        .includes(search)
-    );
-
-
-  renderProducts(
-    filtered,
-    home
-  );
-
-}
-
-
-
-/* =========================
-   RENDER PRODUCTS
-========================= */
+/* =========================================================
+   PRODUCTS
+========================================================= */
 
 function renderProducts(
-  products,
-  container
-){
+  list = products
+) {
 
-  if(!products.length){
+  const container =
+    document.getElementById(
+      "productList"
+    );
 
-    container.innerHTML = `
-      <div class="empty">
+  if (!container) return;
+
+
+  const category =
+    document
+      .getElementById("categoryFilter")
+      ?.value || "";
+
+
+  let filtered =
+    list.filter(product => {
+
+      if (!category) return true;
+
+      return product.category === category;
+
+    });
+
+
+  const search =
+    document
+      .getElementById("searchInput")
+      ?.value
+      .trim()
+      .toLowerCase() || "";
+
+
+  if (search) {
+
+    filtered =
+      filtered.filter(product =>
+
+        product.name
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        product.shopName
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        product.category
+          .toLowerCase()
+          .includes(search)
+
+      );
+
+  }
+
+
+  if (!filtered.length) {
+
+    container.innerHTML =
+      `<div class="empty">
         No products found.
-      </div>
-    `;
+      </div>`;
 
     return;
 
@@ -1655,226 +2067,87 @@ function renderProducts(
 
 
   container.innerHTML =
-    products.map(
-      product=>`
+    filtered
+      .map(productCard)
+      .join("");
 
-      <div class="product">
+}
+
+
+function renderHomeProducts() {
+
+  const container =
+    document.getElementById(
+      "homeProducts"
+    );
+
+  if (!container) return;
+
+
+  const latest =
+    products.slice(-8).reverse();
+
+
+  if (!latest.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        No products available yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    latest
+      .map(productCard)
+      .join("");
+
+}
+
+
+function productCard(product) {
+
+  return `
+
+    <div class="product">
+
+      <div class="product-image">
+        ${getProductIcon(product.category)}
+      </div>
+
+      <div class="product-body">
 
         <div class="product-name">
           ${escapeHTML(product.name)}
         </div>
 
         <div class="price">
-          ₦${product.price.toLocaleString()}
+          ₦${Number(product.price).toLocaleString()}
         </div>
 
-        <div class="small">
-          Minimum quantity:
-          ${product.minimum}
+        <div class="shop-name">
+          ${escapeHTML(product.shopName)}
+          • ${escapeHTML(product.shopCity)}
         </div>
 
-        <button
-          class="blue"
-          onclick="requestProduct(
-            '${escapeHTML(product.name)}'
-          )"
-        >
-          Request this product
-        </button>
-
-      </div>
-
-    `
-    ).join("");
-
-}
-
-
-
-/* =========================
-   REQUEST PRODUCT BUTTON
-========================= */
-
-function requestProduct(name){
-
-  showSection(
-    "requestSection"
-  );
-
-
-  document.getElementById(
-    "requestProduct"
-  ).value = name;
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-
-/* =========================
-   SHOP PRODUCTS
-========================= */
-
-function loadShopProducts(){
-
-  const products =
-    getProducts();
-
-
-  const box =
-    document.getElementById(
-      "shopProducts"
-    );
-
-
-  renderProducts(
-    products,
-    box
-  );
-
-}
-
-
-
-/* =========================
-   CUSTOMER REQUEST HISTORY
-========================= */
-
-function loadMyRequests(){
-
-  const requests =
-    getRequests();
-
-
-  const box =
-    document.getElementById(
-      "myRequests"
-    );
-
-
-  if(!requests.length){
-
-    box.innerHTML = `
-      <div class="empty">
-        No requests yet.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  box.innerHTML =
-    requests.map(
-      request=>`
-
-      <div class="request-card">
-
-        <strong>
-          ${escapeHTML(
-            request.productName
-          )}
-        </strong>
-
-        <br>
-
-        Quantity:
-        ${request.quantity}
-
-        <br>
-
-        ${
-          request.total
-          ?
-          `Total:
-           ₦${request.total.toLocaleString()}
-           <br>`
-          :
-          ""
-        }
-
-        Status:
-        <span class="status">
-          ${request.status}
+        <span class="badge badge-green">
+          ${escapeHTML(product.category)}
         </span>
 
-      </div>
+        <span class="badge">
+          Stock: ${product.quantity}
+        </span>
 
-    `
-    ).join("");
+        <button
+          class="btn btn-primary"
+          onclick="addToCart(${product.id})"
+        >
+          Add to Cart
+        </button>
 
-}
-
-
-
-/* =========================
-   PROFILE
-========================= */
-
-function loadProfile(){
-
-  const shop =
-    JSON.parse(
-      localStorage.getItem(
-        "quickMarketplaceShop"
-      )
-    );
-
-
-  const box =
-    document.getElementById(
-      "profileInfo"
-    );
-
-
-  if(!shop){
-
-    box.innerHTML = `
-      <div class="empty">
-        No profile/shop information yet.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  box.innerHTML = `
-
-    <div class="product">
-
-      <div>
-        <strong>Owner:</strong>
-        ${escapeHTML(shop.ownerName)}
-      </div>
-
-      <br>
-
-      <div>
-        <strong>Shop:</strong>
-        ${escapeHTML(shop.shopName)}
-      </div>
-
-      <br>
-
-      <div>
-        <strong>Location:</strong>
-        ${escapeHTML(shop.shopLocation)}
-      </div>
-
-      <br>
-
-      <div>
-        <strong>Commission:</strong>
-        ₦${shop.commission}
-        per item
       </div>
 
     </div>
@@ -1884,129 +2157,2229 @@ function loadProfile(){
 }
 
 
+function getProductIcon(category) {
 
-/* =========================
-   LOAD ALL DATA
-========================= */
+  const icons = {
 
-function loadAllData(){
+    Food: "🍲",
 
-  const products =
-    getProducts();
+    Fashion: "👕",
+
+    Electronics: "📱",
+
+    Groceries: "🛒",
+
+    Beauty: "💄",
+
+    Other: "📦"
+
+  };
+
+  return icons[category] || "📦";
+
+}
 
 
-  const home =
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function searchMarketplace() {
+
+  if (!settings.customer_search) {
+
+    return;
+
+  }
+
+  renderProducts();
+
+  renderHomeProducts();
+
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+function filterCategory(category) {
+
+  showSection(
+    "productsSection"
+  );
+
+
+  const filter =
     document.getElementById(
-      "homeProducts"
+      "categoryFilter"
     );
 
+  if (filter) {
 
-  if(home){
-
-    renderProducts(
-      products,
-      home
-    );
+    filter.value = category;
 
   }
 
 
-  loadShopProducts();
+  renderProducts();
+
+}
+
+
+/* =========================================================
+   CART
+========================================================= */
+
+function addToCart(productId) {
+
+  const product =
+    products.find(
+      p => p.id === productId
+    );
+
+
+  if (!product) {
+
+    alert("Product not found.");
+
+    return;
+
+  }
+
+
+  if (product.quantity <= 0) {
+
+    alert("This product is out of stock.");
+
+    return;
+
+  }
+
+
+  const existing =
+    cart.find(
+      item =>
+        item.productId === productId
+    );
+
+
+  if (existing) {
+
+    if (
+      existing.quantity >=
+      product.quantity
+    ) {
+
+      alert("Not enough stock.");
+
+      return;
+
+    }
+
+    existing.quantity++;
+
+  }
+
+  else {
+
+    cart.push({
+
+      productId,
+
+      quantity: 1
+
+    });
+
+  }
+
+
+  saveData(
+    "qm_cart",
+    cart
+  );
+
+
+  updateCartCount();
+
+  alert("Added to cart.");
+
+}
+
+
+function updateCartCount() {
+
+  const count =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
+
+
+  const element =
+    document.getElementById(
+      "cartCount"
+    );
+
+  if (element) {
+
+    element.textContent =
+      count;
+
+  }
+
+}
+
+
+function renderCart() {
+
+  const container =
+    document.getElementById(
+      "cartItems"
+    );
+
+  const summary =
+    document.getElementById(
+      "cartSummary"
+    );
+
+
+  if (!container) return;
+
+
+  if (!cart.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        Your cart is empty.
+      </div>`;
+
+    summary.innerHTML = "";
+
+    return;
+
+  }
+
+
+  let subtotal = 0;
+
+
+  container.innerHTML =
+    cart
+      .map(item => {
+
+        const product =
+          products.find(
+            p =>
+              p.id ===
+              item.productId
+          );
+
+
+        if (!product) {
+
+          return "";
+
+        }
+
+
+        const amount =
+          product.price *
+          item.quantity;
+
+
+        subtotal += amount;
+
+
+        return `
+
+          <div class="cart-row">
+
+            <div>
+
+              <strong>
+                ${escapeHTML(product.name)}
+              </strong>
+
+              <br>
+
+              <small>
+                ₦${Number(product.price).toLocaleString()}
+              </small>
+
+            </div>
+
+
+            <div class="qty-controls">
+
+              <button
+                onclick="changeCartQty(
+                  ${product.id},
+                  -1
+                )"
+              >
+                −
+              </button>
+
+              <strong>
+                ${item.quantity}
+              </strong>
+
+              <button
+                onclick="changeCartQty(
+                  ${product.id},
+                  1
+                )"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+  const deliveryFee =
+    Number(
+      localStorage.getItem(
+        "qm_delivery_fee"
+      )
+    ) || 0;
+
+
+  summary.innerHTML = `
+
+    <div class="total-box">
+
+      <div class="total-row">
+        <span>Subtotal</span>
+        <strong>
+          ₦${subtotal.toLocaleString()}
+        </strong>
+      </div>
+
+      <div class="total-row">
+        <span>Delivery</span>
+        <strong>
+          ₦${deliveryFee.toLocaleString()}
+        </strong>
+      </div>
+
+      <div class="total-row total-final">
+        <span>Total</span>
+        <strong>
+          ₦${(
+            subtotal +
+            deliveryFee
+          ).toLocaleString()}
+        </strong>
+      </div>
+
+      <button
+        class="btn btn-primary"
+        onclick="showSection('checkoutSection')"
+      >
+        Continue to Checkout
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+function changeCartQty(
+  productId,
+  change
+) {
+
+  const item =
+    cart.find(
+      i =>
+        i.productId === productId
+    );
+
+
+  const product =
+    products.find(
+      p =>
+        p.id === productId
+    );
+
+
+  if (!item || !product) return;
+
+
+  item.quantity += change;
+
+
+  if (
+    item.quantity <= 0
+  ) {
+
+    cart =
+      cart.filter(
+        i =>
+          i.productId !== productId
+      );
+
+  }
+
+
+  if (
+    item.quantity >
+    product.quantity
+  ) {
+
+    item.quantity =
+      product.quantity;
+
+  }
+
+
+  saveData(
+    "qm_cart",
+    cart
+  );
+
+
+  updateCartCount();
+
+  renderCart();
+
+}
+
+
+/* =========================================================
+   DELIVERY
+========================================================= */
+
+function selectDelivery(type) {
+
+  if (
+    type === "quick" &&
+    !settings.quick_delivery
+  ) {
+
+    alert(
+      "Quick Delivery is currently disabled."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    type === "other" &&
+    !settings.other_delivery
+  ) {
+
+    alert(
+      "Other Delivery is currently disabled."
+    );
+
+    return;
+
+  }
+
+
+  selectedDelivery =
+    type;
+
+
+  document
+    .getElementById(
+      "quickDeliveryOption"
+    )
+    .classList.toggle(
+      "selected",
+      type === "quick"
+    );
+
+
+  document
+    .getElementById(
+      "otherDeliveryOption"
+    )
+    .classList.toggle(
+      "selected",
+      type === "other"
+    );
+
+
+  const routeBox =
+    document.getElementById(
+      "routeBox"
+    );
+
+
+  if (type === "quick") {
+
+    routeBox.style.display =
+      "none";
+
+
+    localStorage.setItem(
+      "qm_delivery_fee",
+      "0"
+    );
+
+  }
+
+  else {
+
+    routeBox.style.display =
+      "block";
+
+  }
+
+
+  renderCheckoutSummary();
+
+  renderCart();
+
+}
+
+
+/* =========================================================
+   CHECKOUT SUMMARY
+========================================================= */
+
+function getCartSubtotal() {
+
+  return cart.reduce(
+    (total, item) => {
+
+      const product =
+        products.find(
+          p =>
+            p.id ===
+            item.productId
+        );
+
+      if (!product) return total;
+
+      return (
+        total +
+        product.price *
+        item.quantity
+      );
+
+    },
+    0
+  );
+
+}
+
+
+function renderCheckoutSummary() {
+
+  const container =
+    document.getElementById(
+      "checkoutSummary"
+    );
+
+  if (!container) return;
+
+
+  const subtotal =
+    getCartSubtotal();
+
+
+  const fee =
+    Number(
+      localStorage.getItem(
+        "qm_delivery_fee"
+      )
+    ) || 0;
+
+
+  let deliveryText =
+    "Other Delivery";
+
+
+  if (
+    selectedDelivery ===
+    "quick"
+  ) {
+
+    deliveryText =
+      `⚡ Quick Delivery — ${settings.quick_delivery_minutes} minutes`;
+
+  }
+
+
+  container.innerHTML = `
+
+    <div class="total-box">
+
+      <div class="total-row">
+        <span>Order</span>
+        <strong>
+          ₦${subtotal.toLocaleString()}
+        </strong>
+      </div>
+
+      <div class="total-row">
+        <span>Delivery</span>
+        <strong>
+          ${deliveryText}
+        </strong>
+      </div>
+
+      <div class="total-row">
+        <span>Delivery Fee</span>
+        <strong>
+          ₦${fee.toLocaleString()}
+        </strong>
+      </div>
+
+      <div class="total-row total-final">
+        <span>Total</span>
+        <strong>
+          ₦${(
+            subtotal +
+            fee
+          ).toLocaleString()}
+        </strong>
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   PLACE ORDER
+========================================================= */
+
+function placeOrder() {
+
+  if (!cart.length) {
+
+    alert(
+      "Your cart is empty."
+    );
+
+    return;
+
+  }
+
+
+  if (!settings.delivery) {
+
+    showMessage(
+      "checkoutMessage",
+      "Delivery is currently disabled.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    document
+      .getElementById("customerName")
+      .value
+      .trim();
+
+  const phone =
+    document
+      .getElementById("customerPhone")
+      .value
+      .trim();
+
+  const address =
+    document
+      .getElementById("deliveryAddress")
+      .value
+      .trim();
+
+  const city =
+    document
+      .getElementById("deliveryCity")
+      .value
+      .trim();
+
+
+  if (
+    !name ||
+    !phone ||
+    !address ||
+    !city
+  ) {
+
+    showMessage(
+      "checkoutMessage",
+      "Please fill your delivery information.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const subtotal =
+    getCartSubtotal();
+
+
+  const deliveryFee =
+    Number(
+      localStorage.getItem(
+        "qm_delivery_fee"
+      )
+    ) || 0;
+
+
+  const commission =
+    cart.reduce(
+      (total, item) => {
+
+        const product =
+          products.find(
+            p =>
+              p.id ===
+              item.productId
+          );
+
+        if (!product) return total;
+
+        return (
+          total +
+          (
+            product.commission || 0
+          ) *
+          item.quantity
+        );
+
+      },
+      0
+    );
+
+
+  const order = {
+
+    id: Date.now(),
+
+    customerName: name,
+
+    customerPhone: phone,
+
+    address,
+
+    city,
+
+    items: [...cart],
+
+    subtotal,
+
+    deliveryFee,
+
+    commission,
+
+    deliveryType:
+      selectedDelivery,
+
+    deliveryTime:
+      selectedDelivery === "quick"
+        ? `${settings.quick_delivery_minutes} minutes`
+        : "Other Delivery",
+
+    status: "Pending",
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  orders.push(order);
+
+  saveData(
+    "qm_orders",
+    orders
+  );
+
+
+  cart = [];
+
+  saveData(
+    "qm_cart",
+    cart
+  );
+
+
+  updateCartCount();
+
+  renderCart();
+
+
+  showMessage(
+    "checkoutMessage",
+    "Order placed successfully!",
+    "success"
+  );
+
+
+  document
+    .getElementById("customerName")
+    .value = "";
+
+  document
+    .getElementById("customerPhone")
+    .value = "";
+
+  document
+    .getElementById("deliveryAddress")
+    .value = "";
+
+  document
+    .getElementById("deliveryCity")
+    .value = "";
+
 
   loadDashboard();
 
-  loadMyRequests();
-
-  loadProfile();
-
 }
 
 
+/* =========================================================
+   DELIVERY CALCULATOR
+========================================================= */
 
-/* =========================
-   SECURITY
-========================= */
+function calculateDelivery() {
 
-function escapeHTML(value){
+  const from =
+    document
+      .getElementById("calcFrom")
+      .value
+      .trim();
 
-  return String(value)
+  const to =
+    document
+      .getElementById("calcTo")
+      .value
+      .trim();
 
-    .replaceAll("&","&amp;")
+  const amount =
+    Number(
+      document
+        .getElementById("calcAmount")
+        .value
+    );
 
-    .replaceAll("<","&lt;")
-
-    .replaceAll(">","&gt;")
-
-    .replaceAll('"',"&quot;")
-
-    .replaceAll("'","&#039;");
-
-}
+  const transport =
+    Number(
+      document
+        .getElementById("calcTransport")
+        .value
+    );
 
 
+  if (!from || !to || transport < 0) {
 
-/* =========================
-   START APP
-========================= */
+    showMessage(
+      "deliveryResult",
+      "Please enter valid delivery information.",
+      "error"
+    );
 
-window.addEventListener(
-  "load",
-  loadAllData
-);
-async function adminLogin() {
-  const email = document.getElementById("adminEmail").value.trim();
-  const password = document.getElementById("adminPassword").value;
-  const message = document.getElementById("adminMessage");
-
-  if (!email || !password) {
-    message.textContent = "Please enter email and password.";
     return;
+
   }
 
-  try {
-    message.textContent = "Connecting to Supabase...";
 
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+  const sameCity =
+    from.toLowerCase() ===
+    to.toLowerCase();
+
+
+  let time =
+    "Other Delivery";
+
+
+  if (
+    sameCity &&
+    settings.quick_delivery
+  ) {
+
+    time =
+      `${settings.quick_delivery_minutes} minutes`;
+
+  }
+
+  else {
+
+    const route =
+      routes.find(
+        r =>
+          r.from.toLowerCase() ===
+            from.toLowerCase() &&
+          r.to.toLowerCase() ===
+            to.toLowerCase()
+      );
+
+
+    if (route) {
+
+      time =
+        route.time;
+
+    }
+
+    else {
+
+      time =
+        "Route time to be confirmed";
+
+    }
+
+  }
+
+
+  let support = 0;
+
+  let customerTransport =
+    transport;
+
+
+  if (
+    settings.bulk_delivery_support &&
+    amount >=
+      Number(
+        settings.bulk_order_minimum
+      )
+  ) {
+
+    support =
+      transport *
+      (
+        Number(
+          settings.app_delivery_support_percent
+        ) / 100
+      );
+
+
+    customerTransport =
+      transport -
+      support;
+
+  }
+
+
+  document
+    .getElementById(
+      "deliveryResult"
+    )
+    .innerHTML = `
+
+      <div class="message success">
+
+        <strong>Delivery Result</strong>
+
+        <br><br>
+
+        Route:
+        ${escapeHTML(from)}
+        →
+        ${escapeHTML(to)}
+
+        <br>
+
+        Estimated time:
+        <strong>${escapeHTML(time)}</strong>
+
+        <br>
+
+        Transport cost:
+        ₦${transport.toLocaleString()}
+
+        <br>
+
+        App support:
+        ₦${support.toLocaleString()}
+
+        <br>
+
+        Customer pays:
+        <strong>
+          ₦${customerTransport.toLocaleString()}
+        </strong>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   MY PRODUCTS
+========================================================= */
+
+function loadMyProducts() {
+
+  const container =
+    document.getElementById(
+      "myProducts"
+    );
+
+  if (!container) return;
+
+
+  if (!products.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        You have no products yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    products
+      .map(product => `
+
+        <div class="route-item">
+
+          <div>
+
+            <strong>
+              ${escapeHTML(product.name)}
+            </strong>
+
+            <br>
+
+            <small>
+              ${escapeHTML(product.shopName)}
+              •
+              ₦${Number(product.price).toLocaleString()}
+              • Stock ${product.quantity}
+            </small>
+
+          </div>
+
+          <span class="badge badge-green">
+            ${escapeHTML(product.category)}
+          </span>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+/* =========================================================
+   REQUESTS
+========================================================= */
+
+function requestProduct() {
+
+  if (!settings.customer_requests) {
+
+    alert(
+      "Customer requests are currently disabled."
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    prompt(
+      "What product are you looking for?"
+    );
+
+
+  if (!name) return;
+
+
+  requests.push({
+
+    id: Date.now(),
+
+    product: name,
+
+    status: "Pending",
+
+    createdAt:
+      new Date().toISOString()
+
+  });
+
+
+  saveData(
+    "qm_requests",
+    requests
+  );
+
+
+  alert(
+    "Your request has been submitted."
+  );
+
+
+  loadRequests();
+
+}
+
+
+function loadRequests() {
+
+  const container =
+    document.getElementById(
+      "requestList"
+    );
+
+  if (!container) return;
+
+
+  if (!requests.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        No requests yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    requests
+      .map(request => `
+
+        <div class="card">
+
+          <strong>
+            ${escapeHTML(request.product)}
+          </strong>
+
+          <br>
+
+          <span class="badge">
+            ${escapeHTML(request.status)}
+          </span>
+
+          <br><br>
+
+          <button
+            class="btn btn-primary btn-small"
+            onclick="acceptRequest(${request.id})"
+          >
+            Accept
+          </button>
+
+          <button
+            class="btn btn-danger btn-small"
+            onclick="rejectRequest(${request.id})"
+          >
+            Reject
+          </button>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+function acceptRequest(id) {
+
+  const request =
+    requests.find(
+      r => r.id === id
+    );
+
+
+  if (!request) return;
+
+
+  request.status =
+    "Accepted";
+
+
+  saveData(
+    "qm_requests",
+    requests
+  );
+
+
+  loadRequests();
+
+}
+
+
+function rejectRequest(id) {
+
+  const request =
+    requests.find(
+      r => r.id === id
+    );
+
+
+  if (!request) return;
+
+
+  request.status =
+    "Rejected";
+
+
+  saveData(
+    "qm_requests",
+    requests
+  );
+
+
+  loadRequests();
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function loadDashboard() {
+
+  const container =
+    document.getElementById(
+      "dashboardContent"
+    );
+
+  if (!container) return;
+
+
+  const totalSales =
+    orders.reduce(
+      (sum, order) =>
+        sum +
+        Number(
+          order.subtotal || 0
+        ),
+      0
+    );
+
+
+  const totalCommission =
+    orders.reduce(
+      (sum, order) =>
+        sum +
+        Number(
+          order.commission || 0
+        ),
+      0
+    );
+
+
+  container.innerHTML = `
+
+    <div class="quick-grid">
+
+      <div class="quick-item">
+        🏪<br>
+        <strong>${shops.length}</strong>
+        <br>
+        Shops
+      </div>
+
+      <div class="quick-item">
+        🛍️<br>
+        <strong>${products.length}</strong>
+        <br>
+        Products
+      </div>
+
+      <div class="quick-item">
+        📦<br>
+        <strong>${orders.length}</strong>
+        <br>
+        Orders
+      </div>
+
+      <div class="quick-item">
+        💰<br>
+        <strong>
+          ₦${totalCommission.toLocaleString()}
+        </strong>
+        <br>
+        Commission
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Total Sales</h3>
+
+      <div style="font-size:25px;font-weight:bold;color:#16a34a">
+        ₦${totalSales.toLocaleString()}
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Recent Orders</h3>
+
+      ${
+        orders.length
+          ? orders
+              .slice()
+              .reverse()
+              .slice(0, 10)
+              .map(order => `
+
+                <div class="route-item">
+
+                  <div>
+
+                    <strong>
+                      ${escapeHTML(order.customerName)}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                      ${order.deliveryType === "quick"
+                        ? "⚡ 30-minute Quick Delivery"
+                        : "🚚 Other Delivery"}
+                    </small>
+
+                  </div>
+
+                  <span class="badge badge-blue">
+                    ₦${Number(order.subtotal).toLocaleString()}
+                  </span>
+
+                </div>
+
+              `)
+              .join("")
+          : `<div class="empty">
+              No orders yet.
+            </div>`
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function saveProfile() {
+
+  profile = {
+
+    name:
+      document
+        .getElementById("profileName")
+        .value
+        .trim(),
+
+    phone:
+      document
+        .getElementById("profilePhone")
+        .value
+        .trim(),
+
+    city:
+      document
+        .getElementById("profileCity")
+        .value
+        .trim()
+
+  };
+
+
+  saveData(
+    "qm_profile",
+    profile
+  );
+
+
+  showMessage(
+    "profileMessage",
+    "Profile saved successfully.",
+    "success"
+  );
+
+}
+
+
+function loadProfile() {
+
+  document
+    .getElementById("profileName")
+    .value =
+      profile.name || "";
+
+  document
+    .getElementById("profilePhone")
+    .value =
+      profile.phone || "";
+
+  document
+    .getElementById("profileCity")
+    .value =
+      profile.city || "";
+
+}
+
+
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
+
+async function adminLogin() {
+
+  const email =
+    document
+      .getElementById("adminEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("adminPassword")
+      .value;
+
+  const message =
+    document.getElementById(
+      "adminMessage"
+    );
+
+
+  if (!email || !password) {
+
+    showMessage(
+      "adminMessage",
+      "Please enter email and password.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!supabaseClient) {
+
+    showMessage(
+      "adminMessage",
+      "Supabase is not connected. Check your publishable key.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    message.innerHTML =
+      `<div class="message info">
+        Logging in...
+      </div>`;
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .auth
+        .signInWithPassword({
+
+          email,
+
+          password
+
+        });
+
 
     if (error) {
-      message.textContent = "Login error: " + error.message;
+
+      showMessage(
+        "adminMessage",
+        "Login error: " +
+          error.message,
+        "error"
+      );
+
       return;
+
     }
+
 
     if (!data.user) {
-      message.textContent = "Login failed: no user found.";
+
+      showMessage(
+        "adminMessage",
+        "Login failed.",
+        "error"
+      );
+
       return;
+
     }
 
-    message.textContent = "Checking admin access...";
 
-    const { data: admin, error: adminError } =
+    const {
+      data: admin,
+      error: adminError
+    } =
       await supabaseClient
         .from("admin_users")
         .select("user_id")
-        .eq("user_id", data.user.id)
+        .eq(
+          "user_id",
+          data.user.id
+        )
         .maybeSingle();
 
+
     if (adminError) {
-      message.textContent =
-        "Admin check error: " + adminError.message;
+
+      showMessage(
+        "adminMessage",
+        "Admin check error: " +
+          adminError.message,
+        "error"
+      );
+
       return;
+
     }
+
 
     if (!admin) {
-      message.textContent = "This account is not an admin.";
-      await supabaseClient.auth.signOut();
+
+      await supabaseClient
+        .auth
+        .signOut();
+
+
+      showMessage(
+        "adminMessage",
+        "This account is not an admin.",
+        "error"
+      );
+
       return;
+
     }
 
-    message.textContent = "Admin login successful!";
-  } catch (error) {
-    message.textContent = "System error: " + error.message;
+
+    showMessage(
+      "adminMessage",
+      "Admin login successful!",
+      "success"
+    );
+
+
+    document
+      .getElementById(
+        "adminSettings"
+      )
+      .style.display =
+        "block";
+
+
+    document
+      .getElementById(
+        "adminLoginBox"
+      )
+      .style.display =
+        "none";
+
+
+    loadAdminSettingsUI();
+
+    loadRoutes();
+
   }
-} 
-</body><
-</html>
+
+  catch (error) {
+
+    showMessage(
+      "adminMessage",
+      "System error: " +
+        error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN SETTINGS UI
+========================================================= */
+
+function loadAdminSettingsUI() {
+
+  document
+    .getElementById(
+      "setShopCreation"
+    ).checked =
+      !!settings.shop_creation;
+
+
+  document
+    .getElementById(
+      "setProductAddition"
+    ).checked =
+      !!settings.product_addition;
+
+
+  document
+    .getElementById(
+      "setCustomerRequests"
+    ).checked =
+      !!settings.customer_requests;
+
+
+  document
+    .getElementById(
+      "setDelivery"
+    ).checked =
+      !!settings.delivery;
+
+
+  document
+    .getElementById(
+      "setCommission"
+    ).checked =
+      !!settings.commission;
+
+
+  document
+    .getElementById(
+      "setMinimumOrder"
+    ).checked =
+      !!settings.minimum_order;
+
+
+  document
+    .getElementById(
+      "setBulkDelivery"
+    ).checked =
+      !!settings.bulk_delivery_support;
+
+
+  document
+    .getElementById(
+      "setShopOwnerRegistration"
+    ).checked =
+      !!settings.shop_owner_registration;
+
+
+  document
+    .getElementById(
+      "setCustomerSearch"
+    ).checked =
+      !!settings.customer_search;
+
+
+  document
+    .getElementById(
+      "setQuickDelivery"
+    ).checked =
+      !!settings.quick_delivery;
+
+
+  document
+    .getElementById(
+      "setQuickDeliveryMinutes"
+    ).value =
+      settings.quick_delivery_minutes || 30;
+
+
+  document
+    .getElementById(
+      "setBulkMinimum"
+    ).value =
+      settings.bulk_order_minimum || 50000;
+
+
+  document
+    .getElementById(
+      "setDeliverySupport"
+    ).value =
+      settings.app_delivery_support_percent || 50;
+
+}
+
+
+/* =========================================================
+   SAVE ADMIN SETTINGS
+========================================================= */
+
+async function saveAdminSettings() {
+
+  const newSettings = {
+
+    shop_creation:
+      document
+        .getElementById(
+          "setShopCreation"
+        ).checked,
+
+    product_addition:
+      document
+        .getElementById(
+          "setProductAddition"
+        ).checked,
+
+    customer_requests:
+      document
+        .getElementById(
+          "setCustomerRequests"
+        ).checked,
+
+    delivery:
+      document
+        .getElementById(
+          "setDelivery"
+        ).checked,
+
+    commission:
+      document
+        .getElementById(
+          "setCommission"
+        ).checked,
+
+    minimum_order:
+      document
+        .getElementById(
+          "setMinimumOrder"
+        ).checked,
+
+    bulk_delivery_support:
+      document
+        .getElementById(
+          "setBulkDelivery"
+        ).checked,
+
+    shop_owner_registration:
+      document
+        .getElementById(
+          "setShopOwnerRegistration"
+        ).checked,
+
+    customer_search:
+      document
+        .getElementById(
+          "setCustomerSearch"
+        ).checked,
+
+    quick_delivery:
+      document
+        .getElementById(
+          "setQuickDelivery"
+        ).checked,
+
+    quick_delivery_minutes:
+      Number(
+        document
+          .getElementById(
+            "setQuickDeliveryMinutes"
+          ).value
+      ) || 30,
+
+    bulk_order_minimum:
+      Number(
+        document
+          .getElementById(
+            "setBulkMinimum"
+          ).value
+      ) || 50000,
+
+    app_delivery_support_percent:
+      Number(
+        document
+          .getElementById(
+            "setDeliverySupport"
+          ).value
+      ) || 50
+
+  };
+
+
+  settings = {
+    ...settings,
+    ...newSettings
+  };
+
+
+  /*
+    Save locally first.
+    This means the frontend continues working
+    even if the database does not yet have the
+    new Quick Delivery columns.
+  */
+
+  localStorage.setItem(
+    "qm_settings",
+    JSON.stringify(settings)
+  );
+
+
+  if (!supabaseClient) {
+
+    showMessage(
+      "settingsMessage",
+      "Settings saved locally. Supabase is not connected.",
+      "info"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update({
+
+          shop_creation:
+            newSettings.shop_creation,
+
+          product_addition:
+            newSettings.product_addition,
+
+          customer_requests:
+            newSettings.customer_requests,
+
+          delivery:
+            newSettings.delivery,
+
+          commission:
+            newSettings.commission,
+
+          minimum_order:
+            newSettings.minimum_order,
+
+          bulk_delivery_support:
+            newSettings.bulk_delivery_support,
+
+          shop_owner_registration:
+            newSettings.shop_owner_registration,
+
+          customer_search:
+            newSettings.customer_search,
+
+          bulk_order_minimum:
+            newSettings.bulk_order_minimum,
+
+          app_delivery_support_percent:
+            newSettings.app_delivery_support_percent
+
+        })
+        .eq("id", 1);
+
+
+    if (error) {
+
+      showMessage(
+        "settingsMessage",
+        "Basic settings saved locally, but Supabase update failed: " +
+          error.message,
+        "info"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "settingsMessage",
+      "Settings saved successfully.",
+      "success"
+    );
+
+  }
+
+  catch (error) {
+
+    showMessage(
+      "settingsMessage",
+      "Settings saved locally. Database update failed.",
+      "info"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
+
+async function adminLogout() {
+
+  if (supabaseClient) {
+
+    await supabaseClient
+      .auth
+      .signOut();
+
+  }
+
+
+  document
+    .getElementById(
+      "adminSettings"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "adminLoginBox"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "adminMessage"
+    )
+    .innerHTML = "";
+
+
+  alert(
+    "Admin logged out."
+  );
+
+}
+
+
+/* =========================================================
+   ROUTES
+========================================================= */
+
+function addRoute() {
+
+  const from =
+    document
+      .getElementById("routeFrom")
+      .value
+      .trim();
+
+  const to =
+    document
+      .getElementById("routeTo")
+      .value
+      .trim();
+
+  const time =
+    document
+      .getElementById("routeTime")
+      .value
+      .trim();
+
+
+  if (!from || !to || !time) {
+
+    alert(
+      "Please fill all route fields."
+    );
+
+    return;
+
+  }
+
+
+  routes.push({
+
+    id: Date.now(),
+
+    from,
+
+    to,
+
+    time,
+
+    active: true
+
+  });
+
+
+  saveData(
+    "qm_routes",
+    routes
+  );
+
+
+  document
+    .getElementById("routeFrom")
+    .value = "";
+
+  document
+    .getElementById("routeTo")
+    .value = "";
+
+  document
+    .getElementById("routeTime")
+    .value = "";
+
+
+  loadRoutes();
+
+}
+
+
+function loadRoutes() {
+
+  const container =
+    document.getElementById(
+      "routeList"
+    );
+
+  if (!container) return;
+
+
+  if (!routes.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        No routes added yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    routes
+      .map(route => `
+
+        <div class="route-item">
+
+          <div>
+
+            <strong>
+              ${escapeHTML(route.from)}
+              →
+              ${escapeHTML(route.to)}
+            </strong>
+
+            <br>
+
+            <small>
+              ${escapeHTML(route.time)}
+            </small>
+
+          </div>
+
+          <button
+            class="btn btn-danger btn-small"
+            onclick="deleteRoute(${route.id})"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+function deleteRoute(id) {
+
+  routes =
+    routes.filter(
+      route =>
+        route.id !== id
+    );
+
+
+  saveData(
+    "qm_routes",
+    routes
+  );
+
+
+  loadRoutes();
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+  elementId,
+  text,
+  type = "info"
+) {
+
+  const element =
+    document.getElementById(
+      elementId
+    );
+
+  if (!element) return;
+
+
+  element.innerHTML =
+    `<div class="message ${type}">
+      ${escapeHTML(text)}
+    </div>`;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   INITIALIZE APP
+========================================================= */
+
+async function initApp() {
+
+  const savedSettings =
+    localStorage.getItem(
+      "qm_settings"
+    );
+
+
+  if (savedSettings) {
+
+    try {
+
+      settings = {
+
+        ...settings,
+
+        ...JSON.parse(
+          savedSettings
+        )
+
+      };
+
+    }
+
+    catch {}
+
+  }
+
+
+  await loadSettings();
+
+
+  loadShopOptions();
+
+  renderProducts();
+
+  renderHomeProducts();
+
+  renderCart();
+
+  loadMyProducts();
+
+  loadRequests();
+
+  loadDashboard();
+
+  loadProfile();
+
+  loadRoutes();
+
+  updateCartCount();
+
+
+  /*
+    Default delivery method
+  */
+
+  selectDelivery("other");
+
+
+  /*
+    Quick Delivery is visible
+    only when enabled.
+  */
+
+  const quick =
+    document.getElementById(
+      "quickDeliveryOption"
+    );
+
+  if (quick) {
+
+    quick.style.display =
+      settings.quick_delivery
+        ? "block"
+        : "none";
+
+  }
+
+}
+
+
+initApp();
+
+</script>
+
+</body>
+                                   </html>
