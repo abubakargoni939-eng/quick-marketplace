@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Quick Marketplace</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+  <header class="top-header">
+    <div class="header-content">
+      <h1>My Profile</h1>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="card profile-card">
+      <div class="profile-icon">
+        👤
+      </div>
+
+      <h2>My Account</h2>
+
+      <p class="profile-description">
+        Manage your Quick Marketplace account.
+      </p>
+
+      <div class="profile-actions">
+
+        <button
+          class="primary-btn"
+          onclick="goHome()">
+          🏠 Back to Marketplace
+        </button>
+
+        <button
+          class="secondary-btn"
+          onclick="openOrders()">
+          📦 My Orders
+        </button>
+
+        <button
+          class="secondary-btn"
+          onclick="openShop()">
+          🏪 Shop Owner
+        </button>
+
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Account Information</h2>
+
+      <div class="profile-info">
+        <p>
+          <strong>Account:</strong>
+          Customer
+        </p>
+
+        <p>
+          <strong>Marketplace:</strong>
+          Quick Marketplace
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          Active
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>My Orders</h2>
+
+      <div id="ordersContainer">
+        <p>No orders yet.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav">
+
+    <button onclick="goHome()">
+      🏠
+      <span>Home</span>
+    </button>
+
+    <button onclick="goProducts()">
+      🛍️
+      <span>Products</span>
+    </button>
+
+    <button onclick="openShop()">
+      🏪
+      <span>Shop</span>
+    </button>
+
+    <button onclick="goCart()">
+      🛒
+      <span>Cart</span>
+    </button>
+
+    <button class="active">
+      👤
+      <span>Profile</span>
+    </button>
+
+  </nav>
+
+  <script src="profile.js"></script>
+
+</body>
+</html>
