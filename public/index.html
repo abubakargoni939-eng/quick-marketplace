@@ -1,28 +1,148 @@
-# Quick Marketplace 3.0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
-This package is a complete MVP codebase for Quick Marketplace:
-- Customer account creation/login
-- Product search and categories
-- Cart and checkout
-- Customer order history
-- Shop-owner shop creation with required commission
-- Product creation with stock/minimum order
-- Delivery page with quick/local and Nigeria-wide delivery concepts
-- Supabase database schema and RLS
-- Admin login/settings
-- Render-ready Node/Express server
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-## Deploy
-1. Upload the repository contents to GitHub.
-2. On Render use:
-   Build command: `npm install`
-   Start command: `npm start`
-3. Add Render environment variables:
-   `SUPABASE_URL`
-   `SUPABASE_PUBLISHABLE_KEY`
-4. Run `sql/schema.sql` once in Supabase SQL Editor.
-5. Create the admin user in Supabase Auth and insert its UUID into `admin_users`.
+  <title>Quick Marketplace</title>
 
-The publishable/anon key is safe for browser use when RLS policies are correctly configured. Never put a Supabase service-role/secret key in frontend code.
+  <link rel="stylesheet" href="style.css">
 
-Important: this is a functional MVP. Payment gateway, real delivery-worker tracking, route pricing engine, and automated commission settlement require additional backend/payment integrations before production use.
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="top">
+    <div>
+      <h1>Quick Marketplace</h1>
+      <p>Buy • Sell • Deliver</p>
+    </div>
+
+    <a href="auth.html" class="account">
+      Account
+    </a>
+  </header>
+
+
+  <main class="wrap">
+
+    <!-- SEARCH -->
+    <section class="hero">
+      <h2>What do you need?</h2>
+
+      <input
+        id="search"
+        type="search"
+        placeholder="Search products or shops..."
+      >
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section>
+
+      <div class="section-head">
+        <h2>Categories</h2>
+
+        <a href="products.html">
+          View all
+        </a>
+      </div>
+
+      <div id="categories" class="categories"></div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+    <section>
+
+      <div class="section-head">
+        <h2>Products</h2>
+
+        <a href="products.html">
+          View all
+        </a>
+      </div>
+
+      <div id="products" class="grid"></div>
+
+    </section>
+
+
+    <!-- DELIVERY -->
+    <section class="delivery-grid">
+
+      <a href="delivery.html" class="feature">
+        <b>⚡ Quick Delivery</b>
+
+        <span>
+          Fast local delivery for eligible orders.
+        </span>
+      </a>
+
+
+      <a href="delivery.html" class="feature">
+        <b>🚚 Anywhere in Nigeria</b>
+
+        <span>
+          Delivery routes across Nigeria.
+        </span>
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom">
+
+    <a href="index.html" class="active">
+      🏠
+      <span>Home</span>
+    </a>
+
+
+    <a href="products.html">
+      🛍️
+      <span>Products</span>
+    </a>
+
+
+    <a href="shop.html">
+      🏪
+      <span>Shop</span>
+    </a>
+
+
+    <a href="cart.html">
+      🛒
+      <span>
+        Cart
+        <i id="cartCount">0</i>
+      </span>
+    </a>
+
+
+    <a href="profile.html">
+      👤
+      <span>Profile</span>
+    </a>
+
+  </nav>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="common.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
