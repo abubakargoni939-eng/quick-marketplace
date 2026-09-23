@@ -1,17 +1,1183 @@
-const S=supabase.createClient(QM.url,QM.key),st={user:null,profile:null,admin:false,products:[],cart:[],settings:null};const $=x=>document.getElementById(x),money=n=>'₦'+Number(n||0).toLocaleString('en-NG'),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function msg(x){$('msg').textContent=x}function tab(t){['signup','signin','otp'].forEach(x=>$(x).classList.toggle('hide',x!==t))}function auth(){ $('modal').classList.remove('hide');tab('signin')}function closeAuth(){$('modal').classList.add('hide')}function toggleCart(){$('cart').classList.toggle('open');renderCart()}
-async function boot(){let{data:{session}}=await S.auth.getSession();await setUser(session?.user);await Promise.all([settings(),products(),orders()]);renderDash();renderAdmin()}async function setUser(u){st.user=u||null;if(u){let{data:p}=await S.from('profiles').select('*').eq('id',u.id).maybeSingle();st.profile=p||{role:u.user_metadata?.role||'customer',full_name:u.user_metadata?.full_name||u.email};let{data:a}=await S.from('admin_users').select('user_id').eq('user_id',u.id).maybeSingle();st.admin=!!a}else{st.profile=null;st.admin=false}$('who').textContent=u?(st.profile.full_name||u.email):'Guest';$('login').classList.toggle('hide',!!u);$('logout').classList.toggle('hide',!u);$('adminLink').classList.toggle('hide',!st.admin)}
-async function settings(){let{data}=await S.from('app_settings').select('*').limit(1).maybeSingle();st.settings=data||{}}async function products(){let{data,error}=await S.from('products').select('*,shops(id,name,city,commission_per_item,minimum_order_quantity)').eq('is_available',true).gt('stock',0).order('created_at',{ascending:false});if(error)return console.error(error);st.products=data||[];renderProducts()}
-function renderProducts(){let q=($('search').value||'').toLowerCase();let a=st.products.filter(p=>`${p.name} ${p.category||''} ${p.description||''} ${p.shops?.name||''}`.toLowerCase().includes(q));$('productsGrid').innerHTML=a.length?a.map(p=>`<article class="product"><div class="pic">${p.image_url?`<img src="${esc(p.image_url)}" style="width:100%;height:100%;object-fit:cover">`:'No image'}</div><div class="body"><h3>${esc(p.name)}</h3><div class="muted">${esc(p.shops?.name||'Shop')} • ${esc(p.category||'Other')}</div><p>${esc(p.description||'')}</p><div class="price">${money(p.price)}</div><div class="muted">Stock ${p.stock}</div><button onclick="add(${p.id})">Add to cart</button></div></article>`).join(''):'<div class="card">No products found.</div>'}
-window.add=id=>{let p=st.products.find(x=>x.id===id),x=st.cart.find(x=>x.id===id);if(!p)return;if(x)x.qty=Math.min(x.qty+1,p.stock);else st.cart.push({id:p.id,name:p.name,price:+p.price,stock:p.stock,shop_id:p.shop_id,qty:1});toggleCart();renderCart()};window.qty=(id,d)=>{let x=st.cart.find(x=>x.id===id);if(!x)return;x.qty=Math.max(0,Math.min(x.stock,x.qty+d));st.cart=st.cart.filter(x=>x.qty);renderCart()};function renderCart(){let total=st.cart.reduce((a,x)=>a+x.price*x.qty,0);$('count').textContent=st.cart.reduce((a,x)=>a+x.qty,0);$('subtotal').textContent=money(total);$('cartItems').innerHTML=st.cart.map(x=>`<div class="line"><span>${esc(x.name)}<br>${money(x.price)} × ${x.qty}</span><span><button onclick="qty(${x.id},-1)">−</button><button onclick="qty(${x.id},1)">+</button></span></div>`).join('')||'<p class="muted">Cart empty</p>'}
-async function checkout(){if(!st.user)return auth();if(!st.cart.length)return;let city=$('city').value.trim(),address=$('address').value.trim();if(!city||!address)return alert('Enter delivery address and city');let ids=[...new Set(st.cart.map(x=>x.shop_id))];if(ids.length!==1)return alert('One shop per order');let{data:shop}=await S.from('shops').select('*').eq('id',ids[0]).single();let q=st.cart.reduce((a,x)=>a+x.qty,0);if(q<+(shop.minimum_order_quantity||1))return alert('Minimum order: '+shop.minimum_order_quantity);let subtotal=st.cart.reduce((a,x)=>a+x.price*x.qty,0),commission=st.cart.reduce((a,x)=>a+(+shop.commission_per_item||0)*x.qty,0);if($('dtype').value==='quick'&&!st.settings.quick_delivery)return alert('Quick Delivery is disabled');let total=subtotal+commission;let{data:o,error}=await S.from('orders').insert({customer_id:st.user.id,shop_id:shop.id,subtotal,commission,vendor_amount:subtotal,delivery_fee:0,total,status:'pending',delivery_address:address+', '+city}).select().single();if(error)return alert(error.message);let{error:ie}=await S.from('order_items').insert(st.cart.map(x=>({order_id:o.id,product_id:x.id,quantity:x.qty,unit_price:x.price,total_price:x.price*x.qty})));if(ie){await S.from('orders').delete().eq('id',o.id);return alert(ie.message)}for(let x of st.cart){let p=st.products.find(y=>y.id===x.id);await S.from('products').update({stock:Math.max(0,p.stock-x.qty),is_available:p.stock-x.qty>0}).eq('id',x.id)}await S.from('delivery_assignments').insert({order_id:o.id,status:'pending'});st.cart=[];toggleCart();await products();await orders();alert('Order #'+o.id+' created');}
-async function orders(){if(!st.user){$('ordersList').innerHTML='<div class="card">Login to see orders.</div>';return}let{data,error}=await S.from('orders').select('*,shops(name,city),order_items(*)').eq('customer_id',st.user.id).order('created_at',{ascending:false});$('ordersList').innerHTML=error?`<div class="card">${esc(error.message)}</div>`:data?.map(o=>`<div class="order"><b>Order #${o.id}</b> <span class="muted">${esc(o.status)}</span><p>${esc(o.shops?.name||'Shop')} • ${money(o.total)}</p><p class="muted">${esc(o.delivery_address||'')}</p></div>`).join('')||'<div class="card">No orders.</div>'}
-async function signup(e){e.preventDefault();let{data,error}=await S.auth.signUp({email:$('se').value.trim(),password:$('sp').value,options:{data:{full_name:$('sn').value.trim(),role:$('sr').value}}});if(error)return msg(error.message);msg(data.session?'Account created.':'Check your email to confirm account.');if(data.session){await setUser(data.user);closeAuth();renderDash()}}async function signin(e){e.preventDefault();let{data,error}=await S.auth.signInWithPassword({email:$('le').value.trim(),password:$('lp').value});if(error)return msg(error.message);await setUser(data.user);closeAuth();renderAll()}async function sendOTP(){let{error}=await S.auth.signInWithOtp({email:$('oe').value.trim(),options:{shouldCreateUser:false}});msg(error?error.message:'OTP sent')}async function verifyOTP(){let{data,error}=await S.auth.verifyOtp({email:$('oe').value.trim(),token:$('oc').value.trim(),type:'email'});if(error)return msg(error.message);await setUser(data.user);closeAuth();renderAll()}
-function renderDash(){if(!st.user)return $('dash').innerHTML='<div class="card">Login first.</div>';let r=st.profile?.role||'customer';let h=`<div class="dashgrid"><div class="card"><h3>Profile</h3><p>${esc(st.profile?.full_name||st.user.email)}</p><p class="muted">Role: ${esc(r)}</p></div>`;if(r==='shop_owner')h+=ownerPanel();if(r==='delivery')h+=`<div class="card"><h3>Delivery</h3><div id="jobs">Loading...</div></div>`;h+='</div>';$('dash').innerHTML=h;if(r==='shop_owner')loadOwner();if(r==='delivery')loadJobs()}
-function ownerPanel(){return `<div class="card"><h3>Create shop</h3><form id="shopForm"><input id="shopN" placeholder="Shop name" required><input id="shopC" placeholder="City" required><input id="shopA" placeholder="Address" required><input id="shopP" placeholder="Phone"><input id="shopFee" type="number" min="0" placeholder="Commission per item (₦)" required><input id="shopMin" type="number" min="1" value="1" placeholder="Minimum order" required><button>Create shop</button></form></div><div class="card"><h3>Add product</h3><form id="prodForm"><select id="ps"></select><input id="pn" placeholder="Product name" required><input id="pp" type="number" min="0" placeholder="Price" required><input id="pq" type="number" min="0" value="1" placeholder="Stock" required><input id="pc" placeholder="Category"><input id="pd" placeholder="Description"><button>Add product</button></form></div><div class="card"><h3>My shops</h3><div id="myshops"></div></div>`}
-async function loadOwner(){let{data}=await S.from('shops').select('*').eq('owner_id',st.user.id);$('myshops').innerHTML=data?.map(s=>`<div class="order"><b>${esc(s.name)}</b><div>${esc(s.city)} • ${money(s.commission_per_item)} per item • min ${s.minimum_order_quantity}</div></div>`).join('')||'<p class="muted">No shop yet.</p>';$('ps').innerHTML=(data||[]).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');$('shopForm').onsubmit=async e=>{e.preventDefault();let{error}=await S.from('shops').insert({owner_id:st.user.id,name:$('shopN').value.trim(),city:$('shopC').value.trim(),address:$('shopA').value.trim(),phone:$('shopP').value.trim(),commission_per_item:+$('shopFee').value,minimum_order_quantity:+$('shopMin').value});alert(error?error.message:'Shop created');renderDash()};$('prodForm').onsubmit=async e=>{e.preventDefault();let{error}=await S.from('products').insert({shop_id:+$('ps').value,name:$('pn').value.trim(),price:+$('pp').value,stock:+$('pq').value,category:$('pc').value.trim()||'Other',description:$('pd').value.trim(),is_available:true});alert(error?error.message:'Product added');products()}}
-async function loadJobs(){let{data,error}=await S.from('delivery_assignments').select('*,orders(id,total,delivery_address)').eq('delivery_person_id',st.user.id);$('jobs').innerHTML=error?esc(error.message):data?.map(j=>`<div class="order"><b>Order #${j.orders?.id}</b><p>${esc(j.orders?.delivery_address||'')}</p><span>${esc(j.status)}</span></div>`).join('')||'<p class="muted">No jobs.</p>'}
-function renderAdmin(){if(!st.admin)return $('adminBox').innerHTML='<div class="card">Admin access only.</div>';let s=st.settings||{};$('adminBox').innerHTML=`<div class="dashgrid"><div class="card"><h3>Settings</h3><label>Quick Delivery <select id="qd"><option value="true">Enabled</option><option value="false">Disabled</option></select></label><label>Minutes<input id="qm" type="number" value="${s.quick_delivery_minutes||30}"></label><button onclick="saveAdmin()">Save</button></div><div class="card"><h3>Routes</h3><form id="rf"><input id="rf1" placeholder="From city" required><input id="rf2" placeholder="To city" required><input id="rd" type="number" min="0" placeholder="Days" required><input id="rfee" type="number" min="0" placeholder="Fee" required><button>Add route</button></form><div id="routes"></div></div></div>`;loadRoutes();$('rf').onsubmit=async e=>{e.preventDefault();let{error}=await S.from('delivery_routes').insert({from_city:$('rf1').value.trim(),to_city:$('rf2').value.trim(),estimated_days:+$('rd').value,delivery_fee:+$('rfee').value,is_active:true});alert(error?error.message:'Route added');loadRoutes()}}
-async function saveAdmin(){if(!st.settings?.id)return alert('app_settings row not found');let{error}=await S.from('app_settings').update({quick_delivery:$('qd').value==='true',quick_delivery_minutes:+$('qm').value}).eq('id',st.settings.id);alert(error?error.message:'Saved');settings()}
-async function loadRoutes(){let{data}=await S.from('delivery_routes').select('*').order('created_at',{ascending:false});$('routes').innerHTML=(data||[]).map(r=>`<div class="order"><b>${esc(r.from_city)} → ${esc(r.to_city)}</b><div>${r.estimated_days} days • ${money(r.delivery_fee)}</div></div>`).join('')||'<p class="muted">No routes.</p>'}
-function renderAll(){renderProducts();renderCart();orders();renderDash();renderAdmin()}$('search').oninput=renderProducts;$('login').onclick=auth;$('logout').onclick=async()=>{await S.auth.signOut();await setUser(null);renderAll()};$('signup').onsubmit=signup;$('signin').onsubmit=signin;S.auth.onAuthStateChange(async(_,s)=>{await setUser(s?.user);renderAll()});boot();
+/* =========================================================
+   QUICK MARKETPLACE
+   REAL SUPABASE APP.JS
+   ========================================================= */
+
+const config = window.QM_CONFIG || {};
+
+if (!config.url || !config.key) {
+  console.error("Supabase configuration is missing.");
+}
+
+const client = window.supabase.createClient(
+  config.url,
+  config.key
+);
+
+let currentUser = null;
+let products = [];
+let cart = [];
+
+
+/* =========================================================
+   START APP
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  await loadUser();
+
+  await loadProducts();
+
+  setupSearch();
+
+  setupAuthForms();
+
+  setupAuthListener();
+
+  renderCart();
+
+});
+
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+async function loadUser() {
+
+  const { data } = await client.auth.getSession();
+
+  currentUser = data?.session?.user || null;
+
+  updateHeader();
+
+  if (currentUser) {
+    await loadOrders();
+  }
+}
+
+
+function setupAuthListener() {
+
+  client.auth.onAuthStateChange(async (_event, session) => {
+
+    currentUser = session?.user || null;
+
+    updateHeader();
+
+    if (currentUser) {
+      await loadOrders();
+    } else {
+      document.getElementById("ordersList").innerHTML = `
+        <div class="card">
+          Login to see your orders.
+        </div>
+      `;
+    }
+  });
+}
+
+
+function updateHeader() {
+
+  const who = document.getElementById("who");
+  const login = document.getElementById("login");
+  const logout = document.getElementById("logout");
+
+  if (!who) return;
+
+  if (currentUser) {
+
+    const name =
+      currentUser.user_metadata?.full_name ||
+      currentUser.email ||
+      "User";
+
+    who.textContent = name;
+
+    if (login) login.classList.add("hide");
+    if (logout) logout.classList.remove("hide");
+
+  } else {
+
+    who.textContent = "Guest";
+
+    if (login) login.classList.remove("hide");
+    if (logout) logout.classList.add("hide");
+  }
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+document.getElementById("login")?.addEventListener("click", () => {
+
+  const modal = document.getElementById("modal");
+
+  if (modal) {
+    modal.classList.remove("hide");
+  }
+
+  tab("signin");
+});
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+document.getElementById("logout")?.addEventListener("click", async () => {
+
+  await client.auth.signOut();
+
+  currentUser = null;
+
+  cart = [];
+
+  renderCart();
+
+  updateHeader();
+});
+
+
+/* =========================================================
+   AUTH TABS
+   ========================================================= */
+
+window.tab = function(type) {
+
+  const signup = document.getElementById("signup");
+  const signin = document.getElementById("signin");
+  const otp = document.getElementById("otp");
+
+  signup?.classList.add("hide");
+  signin?.classList.add("hide");
+  otp?.classList.add("hide");
+
+  if (type === "signup") {
+    signup?.classList.remove("hide");
+  }
+
+  if (type === "signin") {
+    signin?.classList.remove("hide");
+  }
+
+  if (type === "otp") {
+    otp?.classList.remove("hide");
+  }
+
+  clearMessage();
+};
+
+
+window.closeAuth = function() {
+
+  document.getElementById("modal")?.classList.add("hide");
+
+};
+
+
+/* =========================================================
+   SIGN UP
+   ========================================================= */
+
+function setupAuthForms() {
+
+  const signup = document.getElementById("signup");
+
+  signup?.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    const name = document.getElementById("sn").value.trim();
+    const email = document.getElementById("se").value.trim();
+    const password = document.getElementById("sp").value;
+    const role = document.getElementById("sr").value;
+
+    showMessage("Creating account...");
+
+    const { data, error } = await client.auth.signUp({
+
+      email,
+
+      password,
+
+      options: {
+        data: {
+          full_name: name,
+          role
+        }
+      }
+
+    });
+
+    if (error) {
+
+      showMessage(error.message);
+
+      return;
+    }
+
+    if (data.user) {
+
+      showMessage(
+        "Account created. Check your email to confirm your account."
+      );
+
+      signup.reset();
+
+    }
+
+  });
+
+
+  /* ================= LOGIN ================= */
+
+  const signin = document.getElementById("signin");
+
+  signin?.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    const email = document.getElementById("le").value.trim();
+    const password = document.getElementById("lp").value;
+
+    showMessage("Logging in...");
+
+    const { data, error } =
+      await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+
+      showMessage(error.message);
+
+      return;
+    }
+
+    currentUser = data.user;
+
+    showMessage("Login successful.");
+
+    setTimeout(() => {
+      closeAuth();
+    }, 700);
+
+  });
+
+}
+
+
+/* =========================================================
+   OTP
+   ========================================================= */
+
+window.sendOTP = async function() {
+
+  const email = document.getElementById("oe").value.trim();
+
+  if (!email) {
+
+    showMessage("Enter your email first.");
+
+    return;
+  }
+
+  showMessage("Sending OTP...");
+
+  const { error } =
+    await client.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false
+      }
+    });
+
+  if (error) {
+
+    showMessage(error.message);
+
+    return;
+  }
+
+  showMessage(
+    "OTP sent to your email."
+  );
+};
+
+
+window.verifyOTP = async function() {
+
+  const email = document.getElementById("oe").value.trim();
+  const token = document.getElementById("oc").value.trim();
+
+  if (!email || !token) {
+
+    showMessage("Enter your email and OTP.");
+
+    return;
+  }
+
+  showMessage("Verifying OTP...");
+
+  const { data, error } =
+    await client.auth.verifyOtp({
+      email,
+      token,
+      type: "email"
+    });
+
+  if (error) {
+
+    showMessage(error.message);
+
+    return;
+  }
+
+  currentUser = data.user;
+
+  showMessage("OTP verified successfully.");
+
+  setTimeout(() => {
+    closeAuth();
+  }, 700);
+};
+
+
+/* =========================================================
+   PRODUCTS
+   ========================================================= */
+
+async function loadProducts() {
+
+  const grid = document.getElementById("productsGrid");
+
+  if (!grid) return;
+
+  grid.innerHTML = `
+    <div class="card">
+      Loading products...
+    </div>
+  `;
+
+  const { data, error } = await client
+    .from("products")
+    .select(`
+      id,
+      shop_id,
+      name,
+      description,
+      price,
+      image_url,
+      stock,
+      is_available,
+      category
+    `)
+    .eq("is_available", true)
+    .gt("stock", 0)
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+
+    console.error(error);
+
+    grid.innerHTML = `
+      <div class="card">
+        Unable to load products.
+        <br><br>
+        ${escapeHTML(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+  products = data || [];
+
+  renderProducts(products);
+}
+
+
+function renderProducts(list) {
+
+  const grid = document.getElementById("productsGrid");
+
+  if (!grid) return;
+
+  if (!list.length) {
+
+    grid.innerHTML = `
+      <div class="card">
+        No products found.
+      </div>
+    `;
+
+    return;
+  }
+
+  grid.innerHTML = list.map(product => {
+
+    const image = product.image_url
+      ? `<img src="${escapeAttribute(product.image_url)}" alt="${escapeAttribute(product.name)}">`
+      : "🛍️";
+
+    return `
+      <article class="product">
+
+        <div class="pic">
+          ${image}
+        </div>
+
+        <div class="body">
+
+          <h3>
+            ${escapeHTML(product.name)}
+          </h3>
+
+          <p>
+            ${escapeHTML(product.description || "Available now")}
+          </p>
+
+          <div class="price">
+            ₦${money(product.price)}
+          </div>
+
+          <p>
+            Stock: ${product.stock}
+          </p>
+
+          <button
+            onclick="addToCart(${product.id})"
+          >
+            Add to cart
+          </button>
+
+        </div>
+
+      </article>
+    `;
+
+  }).join("");
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+function setupSearch() {
+
+  const search = document.getElementById("search");
+
+  if (!search) return;
+
+  search.addEventListener("input", () => {
+
+    const value =
+      search.value.trim().toLowerCase();
+
+    if (!value) {
+
+      renderProducts(products);
+
+      return;
+    }
+
+    const result = products.filter(product => {
+
+      return (
+        product.name?.toLowerCase().includes(value) ||
+        product.description?.toLowerCase().includes(value) ||
+        product.category?.toLowerCase().includes(value)
+      );
+
+    });
+
+    renderProducts(result);
+  });
+}
+
+
+/* =========================================================
+   CART
+   ========================================================= */
+
+window.addToCart = function(productId) {
+
+  const product =
+    products.find(p => p.id === productId);
+
+  if (!product) return;
+
+  const existing =
+    cart.find(item => item.product.id === productId);
+
+  if (existing) {
+
+    if (existing.quantity >= product.stock) {
+
+      alert("No more stock available.");
+
+      return;
+    }
+
+    existing.quantity++;
+
+  } else {
+
+    cart.push({
+      product,
+      quantity: 1
+    });
+
+  }
+
+  renderCart();
+
+};
+
+
+window.removeFromCart = function(productId) {
+
+  cart =
+    cart.filter(item =>
+      item.product.id !== productId
+    );
+
+  renderCart();
+
+};
+
+
+window.changeQuantity = function(productId, amount) {
+
+  const item =
+    cart.find(i => i.product.id === productId);
+
+  if (!item) return;
+
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+
+    removeFromCart(productId);
+
+    return;
+  }
+
+  if (item.quantity > item.product.stock) {
+
+    item.quantity = item.product.stock;
+
+  }
+
+  renderCart();
+};
+
+
+function renderCart() {
+
+  const container =
+    document.getElementById("cartItems");
+
+  const count =
+    document.getElementById("count");
+
+  const subtotal =
+    document.getElementById("subtotal");
+
+  if (!container) return;
+
+  if (!cart.length) {
+
+    container.innerHTML = `
+      <p class="muted">
+        Your cart is empty.
+      </p>
+    `;
+
+  } else {
+
+    container.innerHTML =
+      cart.map(item => {
+
+        return `
+          <div class="line">
+
+            <div>
+
+              <strong>
+                ${escapeHTML(item.product.name)}
+              </strong>
+
+              <br>
+
+              ₦${money(item.product.price)}
+              × ${item.quantity}
+
+              <br>
+
+              <button
+                onclick="changeQuantity(${item.product.id}, -1)"
+              >
+                −
+              </button>
+
+              <button
+                onclick="changeQuantity(${item.product.id}, 1)"
+              >
+                +
+              </button>
+
+              <button
+                onclick="removeFromCart(${item.product.id})"
+              >
+                Remove
+              </button>
+
+            </div>
+
+            <strong>
+              ₦${money(
+                Number(item.product.price) *
+                item.quantity
+              )}
+            </strong>
+
+          </div>
+        `;
+
+      }).join("");
+
+  }
+
+  const totalItems =
+    cart.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
+  const total =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.product.price) *
+        item.quantity,
+      0
+    );
+
+  if (count) {
+    count.textContent = totalItems;
+  }
+
+  if (subtotal) {
+    subtotal.textContent =
+      `₦${money(total)}`;
+  }
+}
+
+
+window.toggleCart = function() {
+
+  document
+    .getElementById("cart")
+    ?.classList.toggle("open");
+
+};
+
+
+/* =========================================================
+   CHECKOUT
+   ========================================================= */
+
+window.checkout = async function() {
+
+  if (!currentUser) {
+
+    alert("Please login before placing an order.");
+
+    document
+      .getElementById("modal")
+      ?.classList.remove("hide");
+
+    tab("signin");
+
+    return;
+  }
+
+  if (!cart.length) {
+
+    alert("Your cart is empty.");
+
+    return;
+  }
+
+  const address =
+    document.getElementById("address")
+      ?.value.trim();
+
+  const city =
+    document.getElementById("city")
+      ?.value.trim();
+
+  const deliveryType =
+    document.getElementById("dtype")
+      ?.value || "standard";
+
+  if (!address || !city) {
+
+    alert(
+      "Please enter your delivery address and city."
+    );
+
+    return;
+  }
+
+
+  /* One shop per order */
+
+  const shopIds =
+    [...new Set(
+      cart.map(item => item.product.shop_id)
+    )];
+
+  if (shopIds.length !== 1) {
+
+    alert(
+      "Please order products from one shop at a time."
+    );
+
+    return;
+  }
+
+  const shopId = shopIds[0];
+
+
+  /* Get shop commission */
+
+  const { data: shop, error: shopError } =
+    await client
+      .from("shops")
+      .select(`
+        id,
+        name,
+        commission_per_item,
+        minimum_order_quantity
+      `)
+      .eq("id", shopId)
+      .single();
+
+  if (shopError) {
+
+    alert(shopError.message);
+
+    return;
+  }
+
+
+  const totalQuantity =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
+
+
+  if (
+    totalQuantity <
+    Number(shop.minimum_order_quantity || 1)
+  ) {
+
+    alert(
+      `Minimum order is ${shop.minimum_order_quantity} item(s).`
+    );
+
+    return;
+  }
+
+
+  const subtotal =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.product.price) *
+        item.quantity,
+      0
+    );
+
+
+  const commission =
+    Number(shop.commission_per_item || 0) *
+    totalQuantity;
+
+
+  /*
+    Delivery fee can later be calculated
+    from the delivery_routes table.
+  */
+
+  let deliveryFee = 0;
+
+
+  if (deliveryType === "quick") {
+
+    /*
+      Temporary quick-delivery fee is zero
+      until the route pricing system is connected.
+    */
+
+    deliveryFee = 0;
+  }
+
+
+  const total =
+    subtotal +
+    deliveryFee;
+
+
+  const vendorAmount =
+    subtotal -
+    commission;
+
+
+  /* Create order */
+
+  const { data: order, error: orderError } =
+    await client
+      .from("orders")
+      .insert({
+
+        customer_id: currentUser.id,
+
+        shop_id: shopId,
+
+        subtotal,
+
+        commission,
+
+        vendor_amount: vendorAmount,
+
+        delivery_fee: deliveryFee,
+
+        total,
+
+        status: "pending",
+
+        delivery_address:
+          `${address}, ${city}`
+
+      })
+      .select()
+      .single();
+
+
+  if (orderError) {
+
+    alert(
+      `Order failed: ${orderError.message}`
+    );
+
+    return;
+  }
+
+
+  /* Create order items */
+
+  const orderItems =
+    cart.map(item => {
+
+      const unitPrice =
+        Number(item.product.price);
+
+      return {
+
+        order_id: order.id,
+
+        product_id:
+          item.product.id,
+
+        quantity:
+          item.quantity,
+
+        unit_price:
+          unitPrice,
+
+        total_price:
+          unitPrice *
+          item.quantity
+
+      };
+
+    });
+
+
+  const { error: itemsError } =
+    await client
+      .from("order_items")
+      .insert(orderItems);
+
+
+  if (itemsError) {
+
+    /*
+      Remove the order if order items failed.
+    */
+
+    await client
+      .from("orders")
+      .delete()
+      .eq("id", order.id);
+
+    alert(
+      `Order items failed: ${itemsError.message}`
+    );
+
+    return;
+  }
+
+
+  /* Reduce stock */
+
+  for (const item of cart) {
+
+    const newStock =
+      Math.max(
+        0,
+        Number(item.product.stock) -
+        item.quantity
+      );
+
+    await client
+      .from("products")
+      .update({
+        stock: newStock,
+        is_available: newStock > 0
+      })
+      .eq("id", item.product.id);
+
+  }
+
+
+  alert(
+    `Order placed successfully!\nOrder #${order.id}`
+  );
+
+
+  cart = [];
+
+  renderCart();
+
+  document
+    .getElementById("cart")
+    ?.classList.remove("open");
+
+
+  await loadProducts();
+
+  await loadOrders();
+};
+
+
+/* =========================================================
+   ORDERS
+   ========================================================= */
+
+async function loadOrders() {
+
+  const container =
+    document.getElementById("ordersList");
+
+  if (!container) return;
+
+  if (!currentUser) {
+
+    container.innerHTML = `
+      <div class="card">
+        Login to see your orders.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="card">
+      Loading orders...
+    </div>
+  `;
+
+
+  const { data, error } =
+    await client
+      .from("orders")
+      .select(`
+        id,
+        subtotal,
+        commission,
+        vendor_amount,
+        delivery_fee,
+        total,
+        status,
+        delivery_address,
+        created_at,
+        shops (
+          name
+        )
+      `)
+      .eq("customer_id", currentUser.id)
+      .order("created_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    container.innerHTML = `
+      <div class="card">
+        ${escapeHTML(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data?.length) {
+
+    container.innerHTML = `
+      <div class="card">
+        You have no orders yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    data.map(order => {
+
+      return `
+        <div class="order">
+
+          <strong>
+            Order #${order.id}
+          </strong>
+
+          <br>
+
+          <span class="muted">
+            ${escapeHTML(
+              order.shops?.name ||
+              "Shop"
+            )}
+          </span>
+
+          <br><br>
+
+          <span class="badge">
+            ${escapeHTML(order.status)}
+          </span>
+
+          <p>
+            Total:
+            <strong>
+              ₦${money(order.total)}
+            </strong>
+          </p>
+
+          <p class="muted">
+            ${escapeHTML(
+              order.delivery_address || ""
+            )}
+          </p>
+
+          <p class="muted">
+            ${new Date(
+              order.created_at
+            ).toLocaleString()}
+          </p>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function money(value) {
+
+  return Number(value || 0)
+    .toLocaleString("en-NG", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
+
+}
+
+
+function showMessage(message) {
+
+  const box =
+    document.getElementById("msg");
+
+  if (box) {
+    box.textContent = message;
+  }
+
+}
+
+
+function clearMessage() {
+
+  const box =
+    document.getElementById("msg");
+
+  if (box) {
+    box.textContent = "";
+  }
+
+}
+
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+  return escapeHTML(value);
+}
+
+
+/* =========================================================
+   GLOBAL ERROR HANDLER
+   ========================================================= */
+
+window.addEventListener("error", event => {
+
+  console.error(
+    "Quick Marketplace error:",
+    event.error || event.message
+  );
+
+});
