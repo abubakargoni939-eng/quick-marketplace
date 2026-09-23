@@ -1,1 +1,670 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+:root {
+  --green: #16a34a;
+  --green-dark: #15803d;
+  --black: #101828;
+  --text: #17202a;
+  --muted: #667085;
+  --bg: #f6f8fa;
+  --white: #ffffff;
+  --border: #e4e7ec;
+  --shadow: 0 10px 30px rgba(16, 24, 40, .08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ================= HEADER ================= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  min-height: 70px;
+  padding: 0 5%;
+
+  display: flex;
+  align-items: center;
+  gap: 25px;
+
+  background: rgba(16, 24, 40, .97);
+  color: white;
+
+  box-shadow: 0 3px 18px rgba(0,0,0,.12);
+}
+
+header b {
+  font-size: 22px;
+  font-weight: 900;
+  white-space: nowrap;
+  margin-right: auto;
+}
+
+nav {
+  display: flex;
+  gap: 22px;
+}
+
+nav a {
+  color: #d0d5dd;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+nav a:hover {
+  color: white;
+}
+
+header span {
+  color: #d0d5dd;
+  font-size: 13px;
+}
+
+/* ================= BUTTONS ================= */
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 17px;
+
+  background: var(--black);
+  color: white;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: .2s ease;
+}
+
+button:hover {
+  background: #263244;
+  transform: translateY(-1px);
+}
+
+header button {
+  padding: 8px 12px;
+  background: #1f2937;
+}
+
+/* ================= HERO ================= */
+
+.hero {
+  max-width: 1200px;
+  margin: auto;
+
+  min-height: 570px;
+
+  padding: 90px 5%;
+
+  display: flex;
+  align-items: center;
+
+  background:
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(22,163,74,.12),
+      transparent 35%
+    );
+}
+
+.hero small {
+  display: inline-block;
+
+  padding: 7px 13px;
+
+  border-radius: 30px;
+
+  background: #dcfce7;
+  color: #166534;
+
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.hero h1 {
+  max-width: 850px;
+
+  margin: 20px 0;
+
+  font-size: clamp(42px, 7vw, 76px);
+
+  line-height: 1.02;
+
+  letter-spacing: -3px;
+}
+
+.hero p {
+  max-width: 650px;
+
+  color: var(--muted);
+
+  font-size: 18px;
+
+  margin-bottom: 25px;
+}
+
+.hero button {
+  background: var(--green);
+  padding: 14px 25px;
+  font-size: 16px;
+}
+
+.hero button:hover {
+  background: var(--green-dark);
+}
+
+/* ================= SECTIONS ================= */
+
+section {
+  max-width: 1200px;
+  margin: auto;
+
+  padding: 65px 5%;
+}
+
+section h2 {
+  font-size: 34px;
+  margin-bottom: 20px;
+}
+
+/* ================= SEARCH ================= */
+
+#search {
+  max-width: 430px;
+  margin-bottom: 25px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  border: 1px solid #d0d5dd;
+
+  border-radius: 11px;
+
+  background: white;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 4px rgba(22,163,74,.10);
+}
+
+/* ================= PRODUCTS ================= */
+
+.grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(230px, 1fr));
+
+  gap: 20px;
+}
+
+.product {
+  padding: 0;
+
+  overflow: hidden;
+
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 17px;
+
+  box-shadow: 0 4px 15px rgba(16,24,40,.05);
+
+  transition: .25s ease;
+}
+
+.product:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+}
+
+.pic {
+  height: 190px;
+
+  background: #eef1f4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #98a2b3;
+
+  overflow: hidden;
+}
+
+.pic img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.product .body {
+  padding: 17px;
+}
+
+.product h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.product p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.price {
+  font-size: 21px;
+  font-weight: 900;
+
+  margin: 9px 0;
+
+  color: var(--black);
+}
+
+.product .body button {
+  width: 100%;
+  margin-top: 10px;
+
+  background: var(--green);
+}
+
+.product .body button:hover {
+  background: var(--green-dark);
+}
+
+/* ================= CARDS ================= */
+
+.card {
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 17px;
+
+  padding: 22px;
+
+  box-shadow: var(--shadow);
+}
+
+.dashgrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 20px;
+}
+
+/* ================= ORDERS ================= */
+
+#ordersList {
+  display: grid;
+  gap: 14px;
+}
+
+.order {
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 15px;
+
+  padding: 18px;
+
+  box-shadow: 0 3px 15px rgba(16,24,40,.04);
+}
+
+.order strong {
+  font-size: 17px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ================= CART ================= */
+
+#cart {
+  position: fixed;
+
+  top: 0;
+  right: 0;
+
+  width: min(430px, 100%);
+  height: 100vh;
+
+  z-index: 2000;
+
+  padding: 23px;
+
+  background: white;
+
+  box-shadow: -15px 0 40px rgba(0,0,0,.15);
+
+  transform: translateX(110%);
+
+  transition: .25s ease;
+
+  overflow-y: auto;
+}
+
+#cart.open {
+  transform: translateX(0);
+}
+
+#cart h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 17px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+#cart h2 button {
+  background: transparent;
+  color: var(--black);
+  font-size: 25px;
+}
+
+#cartItems {
+  margin: 15px 0;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #eee;
+}
+
+#cart input,
+#cart select {
+  margin-top: 10px;
+}
+
+#cart > button:not(#cartBtn) {
+  width: 100%;
+  margin-top: 12px;
+
+  background: var(--green);
+}
+
+#subtotal {
+  display: block;
+
+  font-size: 22px;
+
+  margin: 18px 0;
+}
+
+/* ================= CART BUTTON ================= */
+
+#cartBtn {
+  position: fixed;
+
+  right: 22px;
+  bottom: 22px;
+
+  z-index: 1500;
+
+  padding: 14px 20px;
+
+  border-radius: 50px;
+
+  background: var(--black);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+
+#count {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 23px;
+  height: 23px;
+
+  margin-left: 5px;
+
+  border-radius: 50%;
+
+  background: var(--green);
+}
+
+/* ================= LOGIN MODAL ================= */
+
+#modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 3000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(16,24,40,.72);
+
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  width: min(480px, 100%);
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 28px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  position: relative;
+
+  box-shadow: 0 25px 60px rgba(0,0,0,.2);
+}
+
+.modal > button {
+  position: absolute;
+
+  top: 10px;
+  right: 12px;
+
+  background: transparent;
+
+  color: var(--black);
+
+  font-size: 25px;
+}
+
+.modal h2 {
+  font-size: 30px;
+  margin-bottom: 15px;
+}
+
+.modal form {
+  display: grid;
+  gap: 12px;
+}
+
+.modal form button {
+  background: var(--green);
+}
+
+.tabs {
+  display: flex;
+  gap: 7px;
+
+  margin: 15px 0;
+}
+
+.tabs button {
+  flex: 1;
+
+  background: #f2f4f7;
+
+  color: #475467;
+}
+
+.tabs button:hover {
+  background: #e4e7ec;
+  color: var(--black);
+}
+
+/* ================= HIDDEN ================= */
+
+.hide {
+  display: none !important;
+}
+
+/* ================= TOAST ================= */
+
+#msg {
+  margin-top: 15px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 800px) {
+
+  header {
+    min-height: 62px;
+
+    padding: 0 4%;
+
+    gap: 10px;
+  }
+
+  header b {
+    font-size: 18px;
+  }
+
+  nav {
+    display: none;
+  }
+
+  header span {
+    display: none;
+  }
+
+  .hero {
+    min-height: 500px;
+
+    padding:
+      65px 5%;
+  }
+
+  .hero h1 {
+    font-size: 45px;
+
+    letter-spacing: -2px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  section {
+    padding: 50px 5%;
+  }
+
+  section h2 {
+    font-size: 29px;
+  }
+
+  .grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+  .pic {
+    height: 145px;
+  }
+
+  .product .body {
+    padding: 12px;
+  }
+
+  .product h3 {
+    font-size: 15px;
+  }
+
+  .price {
+    font-size: 17px;
+  }
+}
+
+/* ================= SMALL PHONES ================= */
+
+@media (max-width: 430px) {
+
+  .hero h1 {
+    font-size: 39px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pic {
+    height: 190px;
+  }
+
+  #cart {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 22px 17px;
+  }
+}
